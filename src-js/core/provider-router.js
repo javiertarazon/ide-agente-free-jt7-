@@ -10,6 +10,12 @@ const { buildSubordinateBackendDescriptor } = require('./openclaw-agent-runtime'
 const { runLocalAgentTask } = require('./local-agent-runtime');
 const { getAgentFacade, normalizeProviderId, requireProvider, resolveProviderModel } = require('./provider-registry');
 const {
+  shouldCooldown,
+  isOnCooldown,
+  applyCooldown,
+  rankFallbackEntries,
+} = require('./provider-core');
+const {
   buildChatCompletionPayload,
   buildProviderHeaders,
   getProviderConfig,
@@ -319,19 +325,11 @@ class ProviderRouter {
   }
 
   _isOnCooldown(candidate = {}) {
-    const routeKey = this._buildRouteKey(candidate);
-    const cooldownUntil = Number(this._cooldowns.get(routeKey) || 0);
-    if (!cooldownUntil) return false;
-    if (Date.now() >= cooldownUntil) {
-      this._cooldowns.delete(routeKey);
-      return false;
-    }
-    return true;
+    return isOnCooldown(this._cooldowns, candidate.provider, candidate.model);
   }
 
   _markCooldown(candidate = {}) {
-    const routeKey = this._buildRouteKey(candidate);
-    this._cooldowns.set(routeKey, Date.now() + this.cooldownMs);
+    applyCooldown(this._cooldowns, candidate.provider, candidate.model, this.cooldownMs);
   }
 
   _isTransientError(error) {
@@ -629,7 +627,7 @@ class ProviderRouter {
       throw new Error('Task sin goal/prompt');
     }
 
-    const routeCandidates = this._buildFallbackEntries(task, runtime, provider, model);
+    const routeCandidates = rankFallbackEntries(this._buildFallbackEntries(task, runtime, provider, model), this._cooldowns);
     const attempts = [];
     let lastError = null;
 
@@ -665,7 +663,7 @@ class ProviderRouter {
           at: new Date().toISOString(),
         });
 
-        const fallbackUsed = index > 0 || attempts.some((item) => item.skipped);
+        const fallbackUsed = index > 0 || attempts.some((item) => item.skipped) || candidate.source !== 'primary';
         return {
           provider: result.provider,
           model: result.model || 'default',
@@ -697,7 +695,7 @@ class ProviderRouter {
           error: message,
           at: new Date().toISOString(),
         });
-        if (transient) {
+        if (shouldCooldown(error)) {
           this._markCooldown(candidate);
         }
         if (!this._shouldTryFallback(error, index, routeCandidates.length)) {

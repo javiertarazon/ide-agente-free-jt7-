@@ -4,6 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 const HISTORY_LIMIT = 12;
+const { compactConversationHistory } = require('./context-compaction');
+const { retrieveSemanticMemory } = require('../memory/semantic-memory');
+const { searchInSessionFiles } = require('./agent-search');
 const MAX_PATHS = 3;
 const MAX_PATH_SCAN_LENGTH = 260;
 const MAX_FILE_PREVIEW_CHARS = 900;
@@ -234,16 +237,37 @@ function buildFreeJt7SystemPrompt(options = {}) {
   ].filter(Boolean).join('\n');
 }
 
+function buildSemanticMemoryBlock(prompt, options = {}) {
+  const matches = retrieveSemanticMemory(prompt, { workspacePath: options.workspacePath, topK: options.memoryTopK || 3 });
+  if (!matches.length) return '';
+  return [
+    'Memoria semantica relevante recuperada:',
+    ...matches.map((m, idx) => `${idx + 1}. ${truncateText(m.text, 300)}`),
+  ].join('\n');
+}
+
+function buildSessionSearchBlock(prompt, options = {}) {
+  const hits = searchInSessionFiles(prompt, { workspacePath: options.workspacePath, topK: options.searchTopK || 3 });
+  if (!hits.length) return '';
+  return [
+    'Busqueda orientada a agente (sesion/proyecto):',
+    ...hits.map((h, idx) => `${idx + 1}. ${h.file}:${h.line} -> ${truncateText(h.text, 180)}`),
+  ].join('\n');
+}
+
 function buildConversationRequest(options = {}) {
   const prompt = String(options.prompt || options.text || '').trim();
   const sessionTitle = String(options.sessionTitle || '').trim();
   const history = stripDuplicatePrompt(normalizeConversationHistory(options.history), prompt);
-  const trimmedHistory = history.slice(-HISTORY_LIMIT);
+  const compaction = compactConversationHistory(history, { maxMessages: HISTORY_LIMIT });
+  const trimmedHistory = compaction.history;
   const textForLocalContext = [
     prompt,
     ...trimmedHistory.map((entry) => entry.content),
   ].filter(Boolean).join('\n');
   const localContext = buildLocalContextBlock(textForLocalContext, { workspacePath: options.workspacePath });
+  const semanticMemory = buildSemanticMemoryBlock(prompt, { workspacePath: options.workspacePath, memoryTopK: options.memoryTopK });
+  const sessionSearch = buildSessionSearchBlock(prompt, { workspacePath: options.workspacePath, searchTopK: options.searchTopK });
   const systemPrompt = [
     buildFreeJt7SystemPrompt({
       channel: options.channel,
@@ -252,6 +276,8 @@ function buildConversationRequest(options = {}) {
       selectedSkills: options.selectedSkills,
     }),
     localContext,
+    semanticMemory,
+    sessionSearch,
   ].filter(Boolean).join('\n\n');
   const messages = [
     ...trimmedHistory,
@@ -263,6 +289,8 @@ function buildConversationRequest(options = {}) {
     systemPrompt,
     messages,
     localContext,
+    semanticMemory,
+    sessionSearch,
     historyCount: trimmedHistory.length,
   };
 }

@@ -109,3 +109,29 @@ Este archivo evita repetir errores en sesiones futuras. Se actualiza despues de 
 
 ## Historial de bloqueos complejos
 - Pendiente: agregar entradas cuando haya bloqueos con 3+ intentos.
+
+| 2026-05-19 | Existian duplicados de artefactos (`files (1)` y scripts de prueba alternos) que ensuciaban el arbol y la auditoria | Se conservaron durante iteraciones previas sin una limpieza final de snapshots temporales | Regla: despues de estabilizar pruebas, eliminar snapshots/duplicados no referenciados y mantener un unico script canonico por proposito |
+
+| 2026-05-19 | El resumen previo pudo percibirse incompleto al no dejar una comparativa profesional reproducible | Habia limpieza de repo pero faltaba un artefacto evaluable y verificable para comparar capacidades del agente | Regla: cada evaluacion de madurez del agente debe incluir una matriz de puntuacion reproducible + test unitario minimo |
+
+| 2026-05-19 | Una puntuacion sin roadmap concreto no ayuda a cerrar brechas operativas | La salida inicial media el gap pero no traducia el delta a backlog priorizado con KPIs | Regla: toda evaluacion comparativa debe emitir plan P0/P1 con objetivos de 30 dias y KPIs verificables |
+
+| 2026-05-19 | La brecha no se cierra solo con roadmap textual; se necesita gate automatizado | Faltaba enforcement continuo de calidad en PR con pruebas repetidas anti-flake | Regla: toda mejora de nivel profesional debe terminar en quality gate ejecutable en CI y local con metricas |
+
+| 2026-05-19 | El nombre de carpeta `copilot-agent` generaba confusion de dependencia funcional | El namespace historico de estado no estaba desacoplado semanticamente en la documentacion ni en defaults nuevos | Regla: usar `freejt7-agent` como default semantico y mantener fallback legacy solo por compatibilidad |
+
+| 2026-05-19 | Mantener solo resolvedor logico no eliminaba deuda de nomenclatura en disco | Sin migracion fisica, seguia ambiguedad operativa en herramientas externas | Regla: cuando haya namespace legado sensible, completar migracion fisica con backup+rollback verificable |
+
+| 2026-05-19 | Sesiones largas podian degradar continuidad por historial plano sin metrica de compactacion | Faltaba una capa explicita de compaction antes de construir el prompt conversacional | Regla: toda ruta de chat agente-first debe compactar historial con metadatos (`kept/dropped`) para trazabilidad y control de contexto |
+
+| 2026-05-19 | La compactacion mejora costo, pero faltaba recuperar decisiones historicas relevantes | Sin retrieval semantico, continuidad dependia de historial reciente o inspeccion local | Regla: tras compactar, inyectar memoria semantica top-K para preservar contexto estrategico sin inflar prompt |
+
+| 2026-05-19 | Memoria semantica ayuda continuidad, pero faltaba buscar decisiones operativas en trazabilidad viva | Sin busqueda de sesion, el agente podia ignorar acuerdos en RESUME/tasks/audit al responder | Regla: antes de responder tareas tecnicas, enriquecer prompt con busqueda top-K en estado de sesion/proyecto |
+
+| 2026-05-19 | El fallback funcionaba pero la logica de cooldown/ranking estaba acoplada al router | Faltaba capa reusable de provider-core para endurecer la resiliencia multi-proveedor | Regla: mover politicas de failover/cooldown a modulo dedicado y verificar orden de rutas bajo enfriamiento |
+
+| 2026-05-19 | El plan de capacidades mostraba skills, pero sin filtro activo por tipo de tarea | Faltaba una capa de activacion selectiva para reducir ruido y mejorar enfoque del agente | Regla: toda capacidad declarada debe pasar por perfil de activacion (`verification/documents/web/coding/general`) antes del despacho |
+
+| 2026-05-19 | Faltaba una formalizacion explicita de roles/canales para tareas complejas | La ejecucion podia escalar en paralelo pero sin plan swarm visible en capabilityPlan | Regla: cuando la complejidad supere umbral, publicar `swarmPlan` con roles, ownership y canales en el runtime |
+
+| 2026-05-19 | Tras cerrar fases, la validacion integral quedaba dispersa en comandos manuales | Faltaba un runner unificado para reducir error humano y mejorar repetibilidad | Regla: despues de cerrar hitos mayores, agregar un comando unico de verificacion funcional integral |

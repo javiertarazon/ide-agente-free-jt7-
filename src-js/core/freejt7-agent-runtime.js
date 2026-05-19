@@ -6,6 +6,8 @@ const {
 } = require('./chat-context');
 const { buildSubordinateBackendDescriptor } = require('./openclaw-agent-runtime');
 const { getAgentFacade, isExternalProvider } = require('./provider-registry');
+const { activateCapabilities } = require('./capability-activation');
+const { buildSwarmPlan } = require('./swarm-orchestrator');
 
 function noop() {}
 
@@ -221,6 +223,8 @@ function createFreeJt7AgentRuntime(options = {}) {
 
   function buildCapabilityPlan(goal, taskContext = {}, routePlan = {}) {
     const skillIds = uniqueStrings((Array.isArray(taskContext?.selectedSkills) ? taskContext.selectedSkills : []).map(normalizeSkillId));
+    const activation = activateCapabilities(goal, skillIds);
+    const swarmPlan = buildSwarmPlan(goal, { threshold: 3 });
     const localOperations = inferLocalOperations(goal);
     const plannedActions = buildLocalDispatchPlan(goal, taskContext, routePlan);
     const mcpServers = normalizeMcpServers(getMcpServers(taskContext, routePlan));
@@ -279,6 +283,10 @@ function createFreeJt7AgentRuntime(options = {}) {
       localOperations,
       plannedActions: summarizePlannedActions(plannedActions),
       selectedSkills: skillIds,
+      activatedSkills: activation.activatedSkills,
+      activationProfile: activation.profile,
+      activationMode: activation.activationMode,
+      swarmPlan,
       skillDispatch,
       mcpServers,
       nativeMcpTools: nativeToolDispatch,
