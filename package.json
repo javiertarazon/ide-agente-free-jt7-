@@ -40,24 +40,24 @@
         "path": "./themes/colorblind-friendly.json"
       }
     ],
-      "viewsContainers": {
-        "activitybar": [
-          {
-            "id": "freejt7-panel",
-            "title": "Agente FreeJT7",
-            "icon": "media/icon-panel.svg"
-          }
-        ]
-      },
-      "views": {
-        "freejt7-panel": [
-          {
-            "id": "freejt7.controlPanelView",
-            "name": "Control Panel",
-            "type": "webview"
-          }
-        ]
-      },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "freejt7-panel",
+          "title": "Agente FreeJT7",
+          "icon": "media/icon-panel.svg"
+        }
+      ]
+    },
+    "views": {
+      "freejt7-panel": [
+        {
+          "id": "freejt7.controlPanelView",
+          "name": "Control Panel",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "freejt7.installWorkspace",
@@ -228,7 +228,11 @@
         },
         "freejt7.panel.policy.mode": {
           "type": "string",
-          "enum": ["mixed", "assisted", "autonomous"],
+          "enum": [
+            "mixed",
+            "assisted",
+            "autonomous"
+          ],
           "default": "mixed",
           "description": "Modo de autonomia del panel: mixed (low/medium auto + high con aprobacion), assisted (todo con aprobacion), autonomous (sin aprobacion)."
         },
@@ -282,7 +286,7 @@
           "type": "number",
           "default": 2,
           "minimum": 1,
-          "description": "Numero minimo de archivos cambiados para disparar review automatico por multi-file." 
+          "description": "Numero minimo de archivos cambiados para disparar review automatico por multi-file."
         },
         "freejt7.copilotRouter.autoFixEnabled": {
           "type": "boolean",
@@ -307,7 +311,13 @@
         },
         "freejt7.apiProvider": {
           "type": "string",
-          "enum": ["copilot", "openrouter", "hf", "zai", "clod"],
+          "enum": [
+            "copilot",
+            "openrouter",
+            "hf",
+            "zai",
+            "clod"
+          ],
           "enumDescriptions": [
             "GitHub Copilot",
             "OpenRouter (default)",
@@ -425,7 +435,8 @@
     "postinstall": "node scripts/fix-copilot-sdk-install.js && node scripts/build-extension-bundle.js",
     "package": "cd \"servidor mpc free jt7\" && npm install --production && cd .. && npm run build:bundle && npx @vscode/vsce package --allow-missing-repository --no-dependencies",
     "package:local": "cd \"servidor mpc free jt7\" && npm install --production && cd .. && npm run build:bundle && npx @vscode/vsce package --no-yarn --allow-missing-repository --no-dependencies",
-    "package:win": "node scripts/freejt7-windows-package.js --dry-run"
+    "package:win": "node scripts/freejt7-windows-package.js --dry-run",
+    "quality:gate": "python tools/quality/run_quality_gate.py --flake-runs 3 --json"
   },
   "devDependencies": {
     "@vscode/vsce": "^3.7.1",

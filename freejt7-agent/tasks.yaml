@@ -2314,3 +2314,86 @@ tareas:
     skills_usados: ["free-jt7-global-runtime-audit", "production-code-audit", "seo-audit"]
     resultado: >
       Run finalizado con 2 steps
+  - id: "20260519-auditoria-estructural-profesional"
+    fecha: "2026-05-19"
+    titulo: "Auditoria estructural profesional y limpieza de duplicados"
+    descripcion: >
+      Evaluar orden del proyecto a nivel directorio, limpiar scripts/artefactos duplicados no usados,
+      detectar fallas y malas practicas, y validar con pruebas y checks estaticos.
+    estado: "completado"
+    riesgo: "medium"
+    skills_usados: []
+    resultado: >
+      Se eliminaron duplicados no referenciados (`files (1)`, `test-router-2.js`, `test-bypass.js`) y se verifico estabilidad con pruebas smoke y lint.
+  - id: "20260519-evaluacion-comparativa-profesional"
+    fecha: "2026-05-19"
+    titulo: "Evaluacion comparativa Free JT7 vs agentes autonomos profesionales"
+    descripcion: >
+      Crear una comparativa profesional, practica y verificable del agente Free JT7,
+      con matriz por ejes, artefacto reproducible y pruebas unitarias asociadas.
+    estado: "completado"
+    riesgo: "low"
+    skills_usados: []
+    resultado: >
+      Se implemento `tools/agent_evaluation/evaluate_freejt7.py` y `tests/test_agent_evaluation.py`,
+      con ejecucion de unit tests/smokes/build para validar consistencia.
+  - id: "20260519-plan-cierre-brecha-competitiva"
+    fecha: "2026-05-19"
+    titulo: "Plan para cerrar la brecha competitiva de Free JT7"
+    descripcion: >
+      Transformar la evaluacion comparativa en un roadmap ejecutable con prioridades y KPIs
+      para reducir la brecha frente a agentes autonomos profesionales.
+    estado: "completado"
+    riesgo: "low"
+    skills_usados: []
+    resultado: >
+      Se agrego `build_gap_closure_plan()` y salida `--roadmap` en el evaluador, junto a pruebas
+      unitarias y verificacion de smokes/build.
+  - id: "20260519-ejecucion-real-cierre-brecha-profesional"
+    fecha: "2026-05-19"
+    titulo: "Ejecucion real del plan para cerrar brecha competitiva"
+    descripcion: >
+      Implementar quality gate de nivel profesional en runtime/tests/CI y validar estabilidad
+      de pruebas, smokes y build con metricas reproducibles.
+    estado: "completado"
+    riesgo: "medium"
+    skills_usados: []
+    resultado: >
+      Se agrego gate automatizado con repeticion de unit tests x3, workflow CI para PR/push
+      y reporte JSON reproducible de calidad.
+  - id: "20260519-independencia-namespace-copilot"
+    fecha: "2026-05-19"
+    titulo: "Aclarar independencia de Copilot en estado/trazabilidad"
+    descripcion: >
+      Separar semanticamente el runtime agent-first de nombres legacy de estado,
+      priorizando `freejt7-agent` con compatibilidad hacia atras.
+    estado: "completado"
+    riesgo: "low"
+    skills_usados: []
+    resultado: >
+      Se implemento resolvedor de namespace de estado y documentacion de compatibilidad
+      para evitar interpretar `copilot-agent` como dependencia obligatoria.
+  - id: "20260519-migracion-fisica-namespace-estado"
+    fecha: "2026-05-19"
+    titulo: "Migracion fisica controlada de copilot-agent a freejt7-agent"
+    descripcion: >
+      Ejecutar migracion real en disco con backup y rollback para consolidar el
+      namespace agent-first en el estado operativo del proyecto.
+    estado: "completado"
+    riesgo: "medium"
+    skills_usados: []
+    resultado: >
+      Migracion aplicada con script `tools/quality/migrate_agent_state_dir.py`,
+      backup creado y pruebas post-migracion en verde.
+  - id: "20260519-fase1-compaction-manager"
+    fecha: "2026-05-19"
+    titulo: "Ejecutar plan Fase 1: compaction manager"
+    descripcion: >
+      Implementar compactacion de historial conversacional para reducir degradacion
+      en sesiones largas y mejorar continuidad agent-first.
+    estado: "completado"
+    riesgo: "low"
+    skills_usados: []
+    resultado: >
+      Se creo `context-compaction.js`, se integro en `chat-context` y se agrego smoke
+      dedicada con verificacion en verde.

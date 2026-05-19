@@ -761,3 +761,17 @@
 {"ts":"2026-04-28T23:18:00Z","action":"implementation","detail":"20260428-phase5-provider-backends-subordinated:freejt7-agent-runtime y provider-router ocultan provider/modelo backend en rutas agent externas usando facade visible freejt7-agent; routeMeta.backend conserva openclaw-harness/provider-direct con provider/model tecnicos; provider-registry agrega facade interno y openclaw-agent-runtime descriptor reusable de backend subordinado"}
 {"ts":"2026-04-28T23:20:00Z","action":"verification","detail":"20260428-phase5-provider-backends-subordinated:freejt7_agent_runtime_smoke OK; provider_router_failover_smoke OK; openclaw_runtime_smoke OK; provider_direct_mode_smoke OK; provider_model_catalog_smoke OK; provider_registry_config_smoke OK"}
 {"ts":"2026-04-28T23:22:00Z","action":"task-close","detail":"20260428-phase5-provider-backends-subordinated:succeeded runtime-owned-visible-control-plane+subordinate-backend-metadata+phase5-formally-closed"}
+{"ts": "2026-05-19T02:04:30.969525Z", "event": "task_start", "task": "auditoria-estructural-profesional-limpieza-duplicados"}
+{"ts": "2026-05-19T02:04:30.969697Z", "event": "task_close", "task": "auditoria-estructural-profesional-limpieza-duplicados", "status": "ok"}
+{"ts": "2026-05-19T02:09:14.535626Z", "event": "task_start", "task": "evaluacion-comparativa-profesional-freejt7"}
+{"ts": "2026-05-19T02:09:14.535763Z", "event": "task_close", "task": "evaluacion-comparativa-profesional-freejt7", "status": "ok"}
+{"ts": "2026-05-19T02:15:45.341221Z", "event": "task_start", "task": "plan-cierre-brecha-competitiva-freejt7"}
+{"ts": "2026-05-19T02:16:25.367953Z", "event": "task_close", "task": "plan-cierre-brecha-competitiva-freejt7", "status": "ok"}
+{"ts": "2026-05-19T10:30:13.288034Z", "event": "task_start", "task": "ejecucion-real-cierre-brecha-profesional"}
+{"ts": "2026-05-19T10:31:16.545279Z", "event": "task_close", "task": "ejecucion-real-cierre-brecha-profesional", "status": "ok"}
+{"ts": "2026-05-19T11:19:12.440556Z", "event": "task_start", "task": "independencia-namespace-copilot"}
+{"ts": "2026-05-19T11:19:12.440556Z", "event": "task_close", "task": "independencia-namespace-copilot", "status": "ok"}
+{"ts": "2026-05-19T11:30:02.004449Z", "event": "task_start", "task": "migracion-fisica-namespace-estado"}
+{"ts": "2026-05-19T11:30:02.004449Z", "event": "task_close", "task": "migracion-fisica-namespace-estado", "status": "ok"}
+{"ts": "2026-05-19T16:54:23.550590Z", "event": "task_start", "task": "fase1-compaction-manager"}
+{"ts": "2026-05-19T16:54:23.550590Z", "event": "task_close", "task": "fase1-compaction-manager", "status": "ok"}

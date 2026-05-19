@@ -71,3 +71,17 @@ Propagar este cierre dentro de `20260428-phase256-parallel-integration` y remata
   - `6e73366` — `docs(agent): Publish own-ide audit and roadmap updates`
   - `5a28520` — `build(app): Add own-ide bootstrap and packaged assets`
 - Limite operativo aplicado: se dejan fuera del historial Git solo cuatro binarios mayores de 100 MB (`.deb`, `.rpm` y dos `.vsix` embebidas) porque GitHub los rechaza sin Git LFS.
+
+- 2026-05-19: auditoria estructural profesional completada; removidos duplicados no usados (`files (1)`, `test-router-2.js`, `test-bypass.js`) y verificacion de smokes/lint ejecutada.
+
+- 2026-05-19: evaluacion comparativa Free JT7 vs agentes profesionales formalizada con script reproducible y test unitario (`tools/agent_evaluation/evaluate_freejt7.py`, `tests/test_agent_evaluation.py`).
+
+- 2026-05-19: definido plan de cierre de brecha competitivo con roadmap P0/P1 + KPIs integrado al evaluador (`--roadmap`).
+
+- 2026-05-19: quality gate profesional implementado (`tools/quality/run_quality_gate.py`) y workflow CI (`.github/workflows/quality-gate.yml`) con unit tests x3 anti-flake.
+
+- 2026-05-19: namespace de estado aclarado; Free JT7 prioriza `freejt7-agent/` y usa `copilot-agent/` solo como compatibilidad historica.
+
+- 2026-05-19: migracion fisica aplicada de `copilot-agent/` a `freejt7-agent/` con backup `.freejt7-agent-migration-backup` y script de rollback.
+
+- 2026-05-19: ejecutada Fase 1 del plan (compaction manager) en `chat-context` con metadatos de historial compactado y smoke dedicada.

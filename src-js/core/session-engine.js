@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveAgentStateDir } = require('./agent-state-paths');
 const { EventEmitter } = require('events');
 const { randomUUID } = require('crypto');
 
@@ -17,7 +18,7 @@ class SessionEngine extends EventEmitter {
   constructor(opts = {}) {
     super();
     this.rootDir = opts.rootDir || process.cwd();
-    this.statePath = opts.statePath || path.join(this.rootDir, 'copilot-agent', 'panel-state.json');
+    this.statePath = opts.statePath || path.join(this.rootDir, resolveAgentStateDir(this.rootDir), 'panel-state.json');
     this.workerCount = Number(opts.workerCount || 3);
     this.maxChatHistoryEntries = Number(opts.maxChatHistoryEntries || 24);
     this.taskExecutionTimeoutMs = Math.max(30_000, Number(opts.taskExecutionTimeoutMs || 120_000));
