@@ -43,12 +43,12 @@ async function main() {
           };
         }
         return {
-          provider: "copilot",
+          provider: "local",
           model: "freejt7-agent",
           summary: "resultado agente",
           executionMode: "agent",
           raw: {
-            executionRoute: "copilot-router",
+            executionRoute: "native-router",
             final: {
               summary: "resultado agente",
               verification: ["node smoke.js", "npm test"],
@@ -62,7 +62,7 @@ async function main() {
 
   engine.start();
   const session = engine.createSession({ title: "verificacion" });
-  const task1 = engine.enqueueTask(session.sessionId, { goal: "haz una tarea de agente", provider: "copilot", executionMode: "agent" });
+  const task1 = engine.enqueueTask(session.sessionId, { goal: "haz una tarea de agente", provider: "local", executionMode: "agent" });
   const completed1 = await waitForTask(engine, task1.taskId, "task.completed");
   assert.equal(completed1.verification.status, "verified");
   assert.equal(completed1.verification.evidence.length, 2);

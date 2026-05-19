@@ -1,6 +1,6 @@
 const assert = require("assert");
 
-const { runWithRouterRunLock } = require("../src-js/core/copilot_router.runtime.js");
+const { runWithRouterRunLock } = require("../src-js/core/native-router-core.js");
 
 async function testCoreRouterLockBlocksConcurrentRuns() {
   assert.equal(typeof runWithRouterRunLock, "function", "runWithRouterRunLock debe exportarse desde el router core");
@@ -14,7 +14,7 @@ async function testCoreRouterLockBlocksConcurrentRuns() {
 
   await assert.rejects(
     () => runWithRouterRunLock(async () => "second-run"),
-    /ya hay una ejecucion activa del router Copilot/i,
+    /ya hay una ejecucion activa del router nativo/i,
   );
 
   releaseFirstRun("first-run");
@@ -27,7 +27,7 @@ async function testCoreRouterLockBlocksConcurrentRuns() {
 
 async function main() {
   await testCoreRouterLockBlocksConcurrentRuns();
-  process.stdout.write("router_core_concurrency_smoke: ok\n");
+  process.stdout.write("native_router_core_concurrency_smoke: ok\n");
 }
 
 main().catch((error) => {

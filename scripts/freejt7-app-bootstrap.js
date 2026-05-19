@@ -211,12 +211,10 @@ function mergeStandaloneSettings(base) {
   settings['freejt7.autoRepairGlobalSettings'] = false;
   settings['freejt7.autoInstallWorkspaceBridge'] = false;
   settings['freejt7.install.updateUserSettings'] = false;
-  if (!settings['freejt7.apiProvider'] || String(settings['freejt7.apiProvider']).trim() === 'copilot') {
+  const configuredProvider = String(settings['freejt7.apiProvider'] || '').trim();
+  if (!configuredProvider || !['openrouter', 'hf', 'zai', 'clod', 'openai', 'anthropic', 'deepseek', 'gemini', 'local'].includes(configuredProvider)) {
     settings['freejt7.apiProvider'] = 'openrouter';
   }
-  settings['github.copilot.enable'] = {
-    '*': false,
-  };
   settings['freejt7.app.standaloneMode'] = true;
   return settings;
 }
@@ -287,14 +285,6 @@ function runBootstrap(inputOptions = {}) {
     '--extensions-dir',
     paths.extensionsDir,
     '--new-window',
-    '--disable-extension',
-    'github.copilot',
-    '--disable-extension',
-    'GitHub.copilot',
-    '--disable-extension',
-    'github.copilot-chat',
-    '--disable-extension',
-    'GitHub.copilot-chat',
     '--disable-extension',
     'anthropic.claude-code',
     '--disable-extension',

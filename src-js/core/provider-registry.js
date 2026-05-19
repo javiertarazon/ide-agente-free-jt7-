@@ -38,13 +38,45 @@ const PROVIDERS = Object.freeze({
     streamSupport: true,
     defaultModel: 'OpenAI/gpt-oss-20B',
   }),
-  copilot: Object.freeze({
-    id: 'copilot',
-    label: 'GitHub Copilot',
-    kind: 'hosted-agent',
-    directSupport: false,
+  openai: Object.freeze({
+    id: 'openai',
+    label: 'OpenAI',
+    kind: 'openai-compatible',
+    directSupport: true,
+    streamSupport: true,
+    defaultModel: 'gpt-4o-mini',
+  }),
+  anthropic: Object.freeze({
+    id: 'anthropic',
+    label: 'Anthropic',
+    kind: 'anthropic-messages',
+    directSupport: true,
     streamSupport: false,
-    defaultModel: '',
+    defaultModel: 'claude-3-5-haiku-latest',
+  }),
+  deepseek: Object.freeze({
+    id: 'deepseek',
+    label: 'DeepSeek',
+    kind: 'openai-compatible',
+    directSupport: true,
+    streamSupport: true,
+    defaultModel: 'deepseek-chat',
+  }),
+  gemini: Object.freeze({
+    id: 'gemini',
+    label: 'Google Gemini',
+    kind: 'openai-compatible',
+    directSupport: true,
+    streamSupport: true,
+    defaultModel: 'gemini-2.5-flash',
+  }),
+  local: Object.freeze({
+    id: 'local',
+    label: 'Modelo local (OpenAI-compatible)',
+    kind: 'openai-compatible-local',
+    directSupport: true,
+    streamSupport: true,
+    defaultModel: 'llama3.1:8b',
   }),
 });
 
@@ -59,6 +91,10 @@ function normalizeProviderId(value) {
   const providerId = String(value || '').trim().toLowerCase();
   if (providerId === 'huggingface' || providerId === 'hugging-face') return 'hf';
   if (providerId === 'zhipu' || providerId === 'zhipuai') return 'zai';
+  if (providerId === 'open-ai') return 'openai';
+  if (providerId === 'claude' || providerId === 'antropic') return 'anthropic';
+  if (providerId === 'google' || providerId === 'google-gemini') return 'gemini';
+  if (providerId === 'ollama' || providerId === 'lmstudio' || providerId === 'lm-studio' || providerId === 'local-openai') return 'local';
   return providerId || 'openrouter';
 }
 
@@ -82,16 +118,13 @@ function requireProvider(providerId) {
   return provider;
 }
 
-function listProviders(options = {}) {
-  const includeCopilot = Boolean(options.includeCopilot);
-  return Object.values(PROVIDERS)
-    .filter((provider) => includeCopilot || provider.id !== 'copilot')
-    .map(cloneProvider);
+function listProviders() {
+  return Object.values(PROVIDERS).map(cloneProvider);
 }
 
 function isExternalProvider(providerId) {
   const id = normalizeProviderId(providerId);
-  return Boolean(PROVIDERS[id] && id !== 'copilot');
+  return Boolean(PROVIDERS[id]);
 }
 
 function listProviderModels(providerId) {

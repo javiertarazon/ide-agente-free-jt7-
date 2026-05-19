@@ -83,7 +83,6 @@ function createFreeJt7AgentRuntime(options = {}) {
   const runOpenClawAgentTask = options.runOpenClawAgentTask;
   const runProviderDirectFallbackTask = options.runProviderDirectFallbackTask;
   const runAcpTask = options.runAcpTask;
-  const runCopilotTask = options.runCopilotTask;
   const shouldPreferLocalExecution = typeof options.shouldPreferLocalExecution === 'function'
     ? options.shouldPreferLocalExecution
     : (() => false);
@@ -232,8 +231,6 @@ function createFreeJt7AgentRuntime(options = {}) {
       toolMode = 'acp-harness';
     } else if (routePlan.primaryRoute === 'openclaw-agent') {
       toolMode = 'agent-backends';
-    } else if (routePlan.primaryRoute === 'copilot-agent') {
-      toolMode = 'copilot-legacy';
     }
     const dispatchTarget = routePlan.primaryRoute === 'local-agent'
       ? 'local-agent-runtime'
@@ -241,9 +238,7 @@ function createFreeJt7AgentRuntime(options = {}) {
         ? 'acp-harness-request'
         : routePlan.primaryRoute === 'openclaw-agent'
           ? 'openclaw-agent-runtime'
-          : routePlan.primaryRoute === 'copilot-agent'
-            ? 'copilot-legacy-runtime'
-            : 'provider-runtime';
+          : 'provider-runtime';
     const skillDispatch = skillIds.map((id) => ({
       id,
       activationPath: 'task.selectedSkills',
@@ -339,7 +334,7 @@ function createFreeJt7AgentRuntime(options = {}) {
       }, goal, taskContext);
     }
 
-    if (provider && provider !== 'copilot') {
+    if (provider) {
       if (deterministicLocal) {
         return finalizePlan({
           primaryRoute: 'local-agent',
@@ -372,14 +367,14 @@ function createFreeJt7AgentRuntime(options = {}) {
     }
 
     return finalizePlan({
-      primaryRoute: 'copilot-agent',
-      runtimeBackend: 'copilot',
-      provider: 'copilot',
-      model: '',
+      primaryRoute: deterministicLocal ? 'local-agent' : 'openclaw-agent',
+      runtimeBackend: deterministicLocal ? 'local' : 'openclaw',
+      provider: deterministicLocal ? 'local' : 'openrouter',
+      model: deterministicLocal ? 'freejt7-local-tools' : '',
       localCapable,
       deterministicLocal,
-      fallbackOrder: localCapable ? ['local-agent'] : [],
-      reason: 'compatibilidad-copilot-legado',
+      fallbackOrder: localCapable && !deterministicLocal ? ['local-agent'] : [],
+      reason: deterministicLocal ? 'goal-resoluble-localmente' : 'provider-nativo-default',
     }, goal, taskContext);
   }
 
@@ -518,31 +513,18 @@ function createFreeJt7AgentRuntime(options = {}) {
       }
     }
 
-    if (typeof runCopilotTask !== 'function') {
-      throw new Error('Free JT7 Agent Runtime no tiene ruta Copilot configurada.');
-    }
-    try {
-      const copilotResult = await runCopilotTask(goal, taskContext);
-      return withExecutionPlan(copilotResult, plan, {}, taskContext);
-    } catch (error) {
-      if (!plan.fallbackOrder.includes('local-agent') || !shouldUseLocalAgentFallback(goal, error)) {
-        throw error;
-      }
-      output.appendLine(`[freejt7-agent-runtime] fallback local por Copilot no disponible: ${String(error?.message || error)}`);
+    if (plan.primaryRoute === 'local-agent' || plan.localCapable) {
       const localResult = await runLocalAgentTask(context, output, {
         goal,
         workspacePath: agentOptions.workspacePath,
         provider: 'local',
         model: 'freejt7-local-tools',
-        fallbackReason: String(error?.message || error),
         actions: runtimePlannedActions,
         capabilityPlan: plan.capabilityPlan,
       });
-      return withExecutionPlan(localResult, plan, {
-        fallbackSelected: 'local-agent',
-        fallbackReason: String(error?.message || error),
-      }, taskContext);
+      return withExecutionPlan(localResult, plan, { fallbackSelected: 'local-agent' }, taskContext);
     }
+
   }
 
   async function executeTask(task = {}, runtime = {}) {
@@ -572,7 +554,6 @@ function createFreeJt7AgentRuntime(options = {}) {
         local: typeof runLocalAgentTask === 'function',
         providerDirect: typeof runProviderDirectFallbackTask === 'function',
         acp: typeof runAcpTask === 'function',
-        copilot: typeof runCopilotTask === 'function',
       },
       checkedAt: new Date().toISOString(),
     };

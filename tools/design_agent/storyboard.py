@@ -84,7 +84,7 @@ def generate_storyboard(
     bridge_path: Path,
     timeout: int = 120,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    if not provider or provider == "copilot" or not bridge_path.exists():
+    if not provider or not bridge_path.exists():
         return heuristic_storyboard(prompt), {"mode": "heuristic", "provider": provider or "heuristic"}
 
     payload = json.dumps(

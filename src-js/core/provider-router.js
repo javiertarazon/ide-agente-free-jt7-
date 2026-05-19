@@ -1,5 +1,6 @@
 'use strict';
 
+const http = require('http');
 const https = require('https');
 const { callProvider, getApiKey } = require('../providers/api-provider-adapter');
 const {
@@ -120,14 +121,14 @@ async function streamCompletion(input = {}, runtime = {}) {
     workspacePath: input.workspacePath || runtime.workspacePath,
     authProfile: input.authProfile || runtime.authProfile,
   }));
-  if (!apiKey) {
+  const providerConfig = getProviderConfig(provider.id);
+  if (!apiKey && providerConfig.requiresApiKey !== false) {
     throw createTaggedError(
       `Free JT7: No hay API Key para "${provider.id}". Usa el comando "Free JT7: Configurar API Key de Proveedor".`,
       { isConfigurationError: true, isUserActionRequired: true, isRetryable: false },
     );
   }
 
-  const providerConfig = getProviderConfig(provider.id);
   const payload = buildChatCompletionPayload({
     providerId: provider.id,
     modelId,
@@ -152,7 +153,7 @@ async function streamCompletion(input = {}, runtime = {}) {
   const onToken = typeof input.onToken === 'function' ? input.onToken : null;
   const onDone = typeof input.onDone === 'function' ? input.onDone : null;
   const onError = typeof input.onError === 'function' ? input.onError : null;
-  const requestImpl = input.requestImpl || https.request;
+  const requestImpl = input.requestImpl || (parsedUrl.protocol === 'http:' ? http.request : https.request);
 
   return new Promise((resolve, reject) => {
     const state = { buffer: '', done: false };
@@ -189,6 +190,7 @@ async function streamCompletion(input = {}, runtime = {}) {
 
     const req = requestImpl({
       hostname: parsedUrl.hostname,
+      port: parsedUrl.port || undefined,
       path: parsedUrl.pathname + (parsedUrl.search || ''),
       method: 'POST',
       headers,
@@ -228,8 +230,7 @@ class ProviderRouter {
     this.context = opts.context;
     this.output = opts.output || null;
     this.agentRuntime = opts.agentRuntime || null;
-    this.executeCopilotTask = opts.executeCopilotTask;
-    this.executeAgentTask = opts.executeAgentTask || opts.executeCopilotTask || this.agentRuntime?.executeAgentTask;
+    this.executeAgentTask = opts.executeAgentTask || this.agentRuntime?.executeAgentTask;
     this.executeAcpTask = opts.executeAcpTask;
     this.workspacePath = opts.workspacePath || "";
     this.defaultRuntimeBackend = normalizeBackend(opts.defaultRuntimeBackend || 'auto');
@@ -609,11 +610,7 @@ class ProviderRouter {
     const provider = normalizeText(task.provider || runtime.defaultProvider || 'openrouter') || 'openrouter';
     const model = normalizeText(task.model || runtime.defaultModel || '');
     const requestedExecutionMode = normalizeText(task.executionMode || runtime.defaultExecutionMode || 'agent').toLowerCase();
-    const executionMode = provider === 'copilot'
-      ? 'agent'
-      : requestedExecutionMode === 'direct'
-        ? 'direct'
-        : 'agent';
+    const executionMode = requestedExecutionMode === 'direct' ? 'direct' : 'agent';
     const goal = normalizeText(task.goal || task.prompt || '');
     const conversationRequest = task.conversationRequest || buildConversationRequest({
       prompt: goal,

@@ -49,7 +49,7 @@ async function main() {
   assert.strictEqual(localResult.executionRoute, 'local-agent-tools');
   assert.ok(localResult.final.summary.includes('Free JT7 respondio con la ruta local de herramientas'));
   assert.ok(localResult.final.summary.includes('Evidencia breve:'));
-  assert.ok(localResult.local.technicalSummary.includes('sin depender de Copilot ni OpenClaw'));
+  assert.ok(localResult.local.technicalSummary.includes('sin depender de servicios de suscripcion externos ni OpenClaw'));
   assert.ok(localResult.local.technicalSummary.includes('Dispatch nativo del runtime:'));
   assert.ok(localResult.local.technicalSummary.includes('mcp:free-jt7-local->local-agent-runtime'));
   assert.ok(localResult.final.verification.some((item) => item.includes('git status --short')));

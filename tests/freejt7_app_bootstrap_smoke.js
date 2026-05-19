@@ -13,14 +13,14 @@ const {
 
 function main() {
   const merged = mergeStandaloneSettings({
-    'freejt7.apiProvider': 'copilot',
+    'freejt7.apiProvider': 'proveedor-obsoleto',
     'some.other.setting': true,
   });
   assert.equal(merged['freejt7.apiProvider'], 'openrouter');
   assert.equal(merged['freejt7.panel.enabled'], true);
   assert.equal(merged['freejt7.panel.chatParticipant.enabled'], false);
   assert.equal(merged['freejt7.panel.policy.mode'], 'autonomous');
-  assert.deepEqual(merged['github.copilot.enable'], { '*': false });
+  assert.equal(Object.prototype.hasOwnProperty.call(merged, 'github.copilot.enable'), false);
 
   const tempBase = fs.mkdtempSync(path.join(os.tmpdir(), 'freejt7-app-smoke-'));
   const repoRoot = process.cwd();

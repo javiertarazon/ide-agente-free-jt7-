@@ -38,16 +38,6 @@ async function main() {
       };
     },
     runAcpTask: async () => ({ run: { summary: 'acp ok' }, final: { summary: 'acp ok' } }),
-    runCopilotTask: async (goal) => {
-      calls.push({ type: 'copilot', goal });
-      return {
-        provider: 'copilot',
-        model: '',
-        executionRoute: 'copilot',
-        run: { summary: 'copilot ok' },
-        final: { summary: 'copilot ok' },
-      };
-    },
     buildLocalActions: (goal) => /crear carpeta/i.test(String(goal || ''))
       ? [{ type: 'mkdir', path: '/tmp/demo', allowAbsolute: true }]
       : [],

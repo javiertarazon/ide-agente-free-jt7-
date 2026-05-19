@@ -1115,3 +1115,120 @@
   - [x] Empaquetar instalador nativo `.deb` de Free JT7 Desktop y validar instalacion en Linux actual (con fallback local sin root)
   - [x] Empaquetar instalador nativo `.rpm` de Free JT7 Desktop y validar instalacion en Linux actual (con fallback local sin root)
   - [ ] Empaquetar instalador `.exe` sobre el host propio ya validado
+
+## Auditoria operativa agente autonomo native-IDE (2026-05-15)
+- [x] `20260515-autonomous-agent-audit-fixes` Analizar fallos que impiden operar como agente autonomo nativo con providers API, skills, MCP y subagentes.
+  - [x] Intake obligatorio resuelto por instruccion del usuario: entregable = analisis detallado + correcciones verificables; restricciones = cambios minimos, compatibles y sin alucinaciones; validacion = pruebas unitarias/smoke de scripts modificados.
+  - [x] Resolver skills aplicables: no hay skill especifica obligatoria para auditoria/correccion general; no se usa skill externa.
+  - [x] Leer docs de tareas, memoria, estrategia y mapa documental completo.
+  - [x] Decision de delegacion: no se delega porque no hubo peticion explicita de usar sub-agentes externos en esta ejecucion y la correccion debe mantenerse acotada.
+  - [x] Ejecutar pruebas/auditoria base para detectar fallos reales.
+  - [x] Corregir fallos minimos de runtime/operacion detectados.
+  - [x] Ejecutar pruebas unitarias/smoke de los scripts modificados.
+  - [x] Cerrar trazabilidad en audit-log y RESUME.
+
+
+## Pruebas unitarias para smokes offline de autonomia (2026-05-15)
+- [x] Objetivo principal: continuar el endurecimiento anterior agregando pruebas unitarias a scripts modificados y evitando ejecucion accidental al importarlos
+  - [x] Convertir scripts smoke/runner en modulos importables con `require.main === module`
+  - [x] Agregar unit tests para seleccion de modelo CLŌD, runner offline/live, resolucion de extension instalada/workspace y fallback router blocked-gate
+  - [x] Registrar el unit test en `package.json` para que `npm run test:offline` lo ejecute
+  - [x] Verificar los scripts modificados y cerrar trazabilidad
+
+
+## Compatibilidad proveedores API y modelos locales (2026-05-15)
+- [x] Objetivo principal: asegurar compatibilidad configurable y testeable para OpenRouter, OpenAI, Anthropic, DeepSeek, Gemini y modelos locales
+  - [x] Intake obligatorio resuelto por instruccion del usuario: entregable = proveedores instalados/compatibles; restricciones = pruebas unitarias, instalar dependencias solo si faltan, evitar alucinaciones; validacion = smokes/unit tests offline.
+  - [x] Resolver skills aplicables: no hay skill especifica obligatoria para providers locales/API; no se usa skill externa.
+  - [x] Decision de delegacion: no delegada porque no hubo peticion explicita de sub-agentes y el cambio es acotado al registry/adaptador/tests.
+  - [x] Auditar registry, configuracion y UI Settings actuales.
+  - [x] Agregar proveedores faltantes con catalogo base, API key env y payloads compatibles.
+  - [x] Agregar pruebas unitarias/smoke para defaults, headers, env keys, catálogos y llamadas mock.
+  - [x] Ejecutar verificaciones y cerrar trazabilidad.
+
+
+## Doctor autonomia nativa, tools, MCP, skills y empaquetado (2026-05-15)
+- [x] Objetivo principal: verificar offline que Free JT7 controla autoaprendizaje, MT5, MCP, skills, subagentes, UI nativa, modos tipo Trae/Codex y empaquetado/instalacion own-IDE
+  - [x] Intake obligatorio resuelto por instruccion del usuario: entregable = auditoria verificable + smoke/doctor; restricciones = pruebas unitarias, instalar dependencias solo si faltan, evitar alucinaciones; validacion = doctor offline + smokes existentes.
+  - [x] Resolver skills aplicables: no hay skill especifica obligatoria para esta auditoria de repo; no se usa skill externa.
+  - [x] Decision de delegacion: no delegada porque no hubo peticion explicita de sub-agentes y el cambio es acotado a doctor/smoke.
+  - [x] Localizar contratos de autoaprendizaje, MT5, MCP, skills, subagentes, UI, privilegios y empaquetado.
+  - [x] Implementar doctor offline centralizado con checks accionables.
+  - [x] Agregar smoke unitario del doctor y script npm.
+  - [x] Ejecutar verificaciones y cerrar trazabilidad.
+
+
+## Eliminacion de dependencia GitHub Copilot en ruta nativa (2026-05-15)
+- [x] Objetivo principal: retirar dependencias nativas de GitHub Copilot/Copilot SDK de scripts, modelos y superficies de Free JT7
+  - [x] Intake obligatorio resuelto por instruccion del usuario: entregable = runtime nativo sin dependencia Copilot; restricciones = pruebas unitarias, instalar dependencias si faltan, evitar alucinaciones; validacion = smokes anti-Copilot + suite offline.
+  - [x] Resolver skills aplicables: no hay skill especifica obligatoria para refactor de dependencia interna; no se usa skill externa.
+  - [x] Decision de delegacion: no delegada porque no hubo peticion explicita de sub-agentes y el cambio es transversal pero acotado.
+  - [x] Auditar dependencias GitHub Copilot expuestas en package/scripts/runtime.
+  - [x] Retirar Copilot de providers/modelos/configuracion/comandos nativos y dejar solo rutas propias.
+  - [x] Convertir drills/smokes para usar runtime/tool gate nativo sin auth Copilot.
+  - [x] Agregar smoke anti-dependencia y ejecutar verificaciones.
+
+## Comparativa autonomia Free JT7 vs Codex vs Trae (2026-05-15)
+- [x] Objetivo principal: comparar flujo de trabajo, desglose de solicitudes, subagentes, memoria persistente, herramientas/skills, MCP, privilegios y proveedores para medir cercania de Free JT7 a un agente autonomo real
+  - [x] Intake obligatorio resuelto por instruccion del usuario: entregable = comparativa objetiva y accionable; restricciones = pruebas unitarias, instalar dependencias si faltan, evitar alucinaciones; validacion = smoke de documento + pruebas offline ligeras.
+  - [x] Resolver skills aplicables: no hay skill especifica obligatoria para auditoria comparativa general; se usan fuentes oficiales web y evidencia local.
+  - [x] Decision de delegacion: no delegada porque el usuario pidio comparar con Codex/Trae pero no solicito sub-agentes paralelos; el entregable es de auditoria documental acotada.
+  - [x] Auditar evidencia local de Free JT7 sobre workflow, subagentes, memoria, tools, MCP, privilegios y providers.
+  - [x] Contrastar contra capacidades documentadas de Codex y Trae con fuentes fechadas.
+  - [x] Publicar matriz de puntuacion, brechas y roadmap.
+  - [x] Agregar smoke unitario de consistencia y ejecutar verificaciones.
+
+## Gate de cierre de brechas autonomia Free JT7 (2026-05-15)
+- [x] Objetivo principal: evitar marcar como cerrada la brecha Free JT7 vs Codex/Trae solo por cuantificarla, agregando un gate verificable de madurez autonoma
+  - [x] Intake obligatorio resuelto por instruccion del usuario: entregable = confirmar/cerrar brecha con evidencia; restricciones = pruebas unitarias, cambios pragmaticos, evitar alucinaciones; validacion = smoke/unit test + doctor/build.
+  - [x] Resolver skills aplicables: no hay skill especifica obligatoria para gate interno de madurez; se usa evidencia local del repo.
+  - [x] Decision de delegacion: no delegada porque no hubo peticion explicita de sub-agentes y el cambio es acotado.
+  - [x] Implementar assessor/gate para sandboxing, paralelismo, memoria semantica y UX de revision.
+  - [x] Integrar el resultado en el doctor/documentacion sin afirmar cierre total.
+  - [x] Agregar pruebas unitarias y ejecutar verificaciones.
+
+## Cierre tecnico brechas autonomia Free JT7 (2026-05-16)
+- [x] Objetivo principal: cerrar con evidencia tecnica las brechas de sandboxing, paralelismo de subagentes, memoria semantica y UX review/rollback
+  - [x] Intake obligatorio resuelto por instruccion del usuario: entregable = scripts/codigo para cerrar brecha; restricciones = pruebas unitarias, cambios seguros, evitar alucinaciones; validacion = smokes nuevos + doctor + suite offline.
+  - [x] Resolver skills aplicables: no hay skill especifica obligatoria para implementacion interna de runtime; se usa evidencia local y docs leidos.
+  - [x] Decision de delegacion: no delegada porque no hubo peticion explicita de sub-agentes y el cambio se puede aislar en modulos nuevos.
+  - [x] Implementar sandbox por tarea con allowlist de rutas/comandos y bloqueo de red declarativo.
+  - [x] Implementar orquestador de subagentes paralelos con contexto aislado y resumen de ejecucion.
+  - [x] Implementar memoria semantica local con indexado/consulta/redaccion basica.
+  - [x] Implementar review/rollback con snapshots, diffs simples y restauracion.
+  - [x] Actualizar gate/doctor y documentacion de cierre.
+  - [x] Ejecutar verificaciones y cerrar trazabilidad.
+
+## Hardening avanzado producto autonomia Free JT7 (2026-05-17)
+- [x] Objetivo principal: endurecer Free JT7 hacia nivel producto profesional con aislamiento real de procesos, UI visual de planes/diffs, pruebas live opt-in y validacion de instalacion final own-IDE.
+  - [x] Intake obligatorio asumido por solicitud explicita: entregable = codigo + smokes + trazabilidad; restricciones/no-goals = mantener compatibilidad offline por defecto, sin reintroducir Copilot ni depender de credenciales live para CI; validacion = unit/smoke tests, doctor nativo, offline suite y build bundle.
+  - [x] Resolucion de skills: no aplica skill local especializada; se usaran patrones internos existentes y buenas practicas de agentes autonomos (sandbox por proceso, review visual, memoria y gates verificables).
+  - [x] Decision de delegacion: no se delega a sub-agentes externos porque el usuario pidio endurecer el codigo base, no ejecutar sub-agentes de esta sesion; se mantiene ownership central para evitar conflictos transversales.
+  - [x] Auditar el estado actual de sandbox/UI/live/install y cerrar brechas con cambios compatibles.
+  - [x] Implementar aislamiento de procesos con allowlist, timeout, entorno saneado y evidencia de ejecucion.
+  - [x] Ampliar UI del panel con workflow visual de plan, diffs, review/rollback y evidencia.
+  - [x] Agregar pruebas live opt-in con APIs reales y validacion final de instalacion own-IDE sin romper offline.
+  - [x] Integrar checks en doctor nativo y smokes unitarios.
+  - [x] Ejecutar verificacion ligera y cerrar trazabilidad.
+
+## Publicacion remota v4.2.12 autonomia producto (2026-05-18)
+- [ ] Objetivo principal: subir una rama nueva correlativa al remoto de `javiertarazon` con version, documentacion, trazabilidad, memoria y estado operativo actualizados.
+  - [x] Intake obligatorio asumido por instruccion explicita: entregable = rama remota nueva + version correlativa + docs/trazabilidad; restricciones = no forzar credenciales ni reescribir remoto; validacion = unit/smokes, doctor, build, suite offline y verificacion de push.
+  - [x] Resolucion de skills: no hay skill local especifica para publicacion Git; se aplica flujo interno de release/trazabilidad.
+  - [x] Decision de delegacion: no se delega porque la tarea es secuencial y depende de credenciales/remoto del workspace.
+  - [x] Crear rama local `release/v4.2.12-native-autonomy-product`.
+  - [x] Subir version correlativa a `4.2.12` en `package.json` y `package-lock.json`.
+  - [x] Documentar cambios, estado de funcionamiento, riesgos y siguiente paso en README y doc de publicacion.
+  - [x] Ejecutar verificaciones unitarias/build/doctor/offline.
+  - [ ] Configurar/verificar remoto y hacer push de la rama nueva. Resultado: `origin` configurado, pero `git push` bloqueado por proxy del entorno (`CONNECT tunnel failed, response 403`).
+  - [x] Cerrar trazabilidad con commit, PR y resultado de push bloqueado documentado.
+
+## Reintento de push remoto con token GitHub (2026-05-18)
+- [x] Objetivo principal: usar credencial proporcionada por el usuario para subir los commits anteriores a GitHub sin almacenar secretos en el repositorio.
+  - [x] Intake obligatorio asumido por instruccion explicita: entregable = push de rama `release/v4.2.12-native-autonomy-product`; restricciones = no persistir token, no exponerlo en docs/final, no hacer force-push; validacion = `git push` y verificacion remota si la red lo permite.
+  - [x] Resolucion de skills: no aplica skill local especifica para Git remoto; se usa `GIT_ASKPASS` temporal para evitar guardar credenciales.
+  - [x] Decision de delegacion: no se delega porque es una operacion secuencial de Git y credenciales.
+  - [x] Configurar `origin` a `https://github.com/javiertarazon/ide-agente-free-jt7-.git`.
+  - [x] Crear rama local `release/v4.2.12-native-autonomy-product` desde el commit actual.
+  - [x] Intentar `git push -u origin release/v4.2.12-native-autonomy-product` con credencial temporal.
+  - [x] Resultado: bloqueado por red/proxy antes de autenticacion GitHub (`CONNECT tunnel failed, response 403`).

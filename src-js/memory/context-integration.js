@@ -4,7 +4,7 @@
  * Bridge module wiring ContextHierarchy + LazyMemoryLoader into the router lifecycle.
  *
  * Exports exactly: { setupContextInRouter, recordStepWithCompression, finalizeContextSystem }
- * Already imported at line 4 of copilot_router.runtime.js — no router changes required.
+ * Integracion de contexto para runtimes nativos.
  */
 
 const fs   = require("fs");
@@ -46,9 +46,9 @@ function sanitizeText(value, maxLength = 12000) {
 // ---------------------------------------------------------------------------
 
 /**
- * setupContextInRouter — called once at the start of runCopilotRouter.
+ * setupContextInRouter — called once at the start of a native router run.
  *
- * @param {object} options - same options object passed to runCopilotRouter
+ * @param {object} options - options object passed to the native router
  * @returns {object} contextSystem handle used by the other two exports
  */
 function setupContextInRouter(options) {

@@ -60,8 +60,8 @@ async function main() {
   const provider = String(input.provider || "").trim();
   const model = String(input.model || "").trim();
   const prompt = String(input.prompt || "").trim();
-  if (!provider || provider === "copilot") {
-    throw new Error("El provider bridge requiere un proveedor externo configurado.");
+  if (!provider) {
+    throw new Error("El provider bridge requiere un proveedor nativo configurado.");
   }
   if (!prompt) {
     throw new Error("Falta prompt para construir el storyboard.");

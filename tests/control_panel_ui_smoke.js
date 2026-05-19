@@ -46,7 +46,7 @@ function testPanelHtmlIncludesProfessionalLayoutAndActions() {
   assert.ok(html.includes("data-tab=\"status\""), "Debe incluir pestaña de estado/onboarding/SLO");
   assert.ok(html.includes("id=\"operationalStatus\""), "Debe incluir contenedor de estado operativo");
   assert.ok(html.includes("value=\"clod\""), "Debe incluir proveedor CLŌD en el panel");
-  assert.ok(!html.includes("value=\"copilot\""), "El panel propio no debe ofrecer Copilot como proveedor");
+  assert.ok(!html.includes("value=\"copilot\""), "El panel propio no debe ofrecer proveedores legacy de chat");
   assert.ok(html.includes("data-action=\"approve\""), "Debe incluir acciones para aprobacion");
   assert.ok(html.includes("data-action=\"continue\""), "Debe incluir acción para continuar una tarea previa");
   assert.ok(html.includes("id=\"spawnSubagent\""), "Debe incluir accion para spawn de subagente");
@@ -57,6 +57,9 @@ function testPanelHtmlIncludesProfessionalLayoutAndActions() {
   assert.ok(html.includes("id=\"controlPatch\""), "Debe incluir config.patch en UI");
   assert.ok(html.includes("id=\"controlRestart\""), "Debe incluir restart runtime en UI");
   assert.ok(html.includes("verify:"), "Debe incluir estado de verificacion visible en tareas");
+  assert.ok(html.includes("workflow-review"), "Debe incluir componente visual de workflow/review");
+  assert.ok(html.includes("Plan visual · diff · review · rollback"), "Debe mostrar plan visual, diff, review y rollback");
+  assert.ok(html.includes("diff-preview"), "Debe incluir preview visual de diff");
   assert.ok(html.includes("resultado:"), "Debe mostrar resultados en español dentro del inspector de tareas");
   assert.ok(html.includes("ruta: "), "Debe resumir la ruta efectiva de cada tarea sin exponer demasiada telemetria cruda");
   assert.ok(html.includes("modelo: "), "Debe mostrar el modelo efectivo por tarea");
@@ -76,6 +79,7 @@ function testPanelHtmlIncludesProfessionalLayoutAndActions() {
   assert.ok(source.includes("function getSloSnapshot"), "Debe calcular SLO basico desde tareas locales");
   assert.ok(source.includes("capabilityPlan"), "Debe poder reflejar el plan de capacidades del runtime propio en la UI");
   assert.ok(source.includes("plan: "), "Debe mostrar resumen del plan operativo/capacidades en las tarjetas de tarea");
+  assert.ok(source.includes("appendWorkflowReview"), "Debe renderizar el workflow visual por tarea");
   assert.ok(html.includes("$('modelCustom').addEventListener('input'"), "Debe sincronizar modelo manual en tiempo real");
   assert.ok(html.includes("$('provider').onchange"), "Debe mantener controlador de cambio de proveedor");
   assert.ok(html.includes("setCustomModelVisibility(false);"), "Debe limpiar modelo manual al cambiar proveedor");

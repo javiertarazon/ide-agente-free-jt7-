@@ -1,8 +1,8 @@
 {
   "name": "agente-freejt7-extension-funcional",
   "displayName": "Agente Free JT7 Extension",
-  "description": "Instala y valida Free JT7 en workspaces de VS Code usando panel propio, proveedores externos y gateway OpenClaw, con compatibilidad opcional para Copilot Chat.",
-  "version": "4.2.11",
+  "description": "Instala y valida Free JT7 con panel propio, proveedores externos, modelos locales y gateway OpenClaw, sin depender de GitHub Copilot ni sus modelos de suscripción.",
+  "version": "4.2.12",
   "publisher": "javiertarazon",
   "license": "MIT",
   "engines": {
@@ -13,7 +13,6 @@
   ],
   "keywords": [
     "freejt7",
-    "copilot",
     "agent",
     "skills",
     "automation"
@@ -40,24 +39,24 @@
         "path": "./themes/colorblind-friendly.json"
       }
     ],
-      "viewsContainers": {
-        "activitybar": [
-          {
-            "id": "freejt7-panel",
-            "title": "Agente FreeJT7",
-            "icon": "media/icon-panel.svg"
-          }
-        ]
-      },
-      "views": {
-        "freejt7-panel": [
-          {
-            "id": "freejt7.controlPanelView",
-            "name": "Control Panel",
-            "type": "webview"
-          }
-        ]
-      },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "freejt7-panel",
+          "title": "Agente FreeJT7",
+          "icon": "media/icon-panel.svg"
+        }
+      ]
+    },
+    "views": {
+      "freejt7-panel": [
+        {
+          "id": "freejt7.controlPanelView",
+          "name": "Control Panel",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "freejt7.installWorkspace",
@@ -80,12 +79,8 @@
         "title": "Free JT7: Abrir documentacion"
       },
       {
-        "command": "freejt7.routeTaskWithCopilot",
-        "title": "Free JT7: Ejecutar tarea del agente"
-      },
-      {
         "command": "freejt7.routeTaskDirect",
-        "title": "Free JT7: Ejecutar tarea directa con proveedor activo"
+        "title": "Free JT7: Ejecutar tarea con runtime nativo"
       },
       {
         "command": "freejt7.openControlPanel",
@@ -149,7 +144,7 @@
         "id": "freejt7.chat",
         "name": "free-jt7",
         "fullName": "Free JT7",
-        "description": "Planifica y ejecuta tareas de Free JT7 desde GitHub Copilot Chat en cualquier carpeta abierta.",
+        "description": "Planifica y ejecuta tareas de Free JT7 desde el chat nativo de VS Code o desde el panel propio.",
         "isSticky": true,
         "commands": [
           {
@@ -228,95 +223,45 @@
         },
         "freejt7.panel.policy.mode": {
           "type": "string",
-          "enum": ["mixed", "assisted", "autonomous"],
+          "enum": [
+            "mixed",
+            "assisted",
+            "autonomous"
+          ],
           "default": "mixed",
           "description": "Modo de autonomia del panel: mixed (low/medium auto + high con aprobacion), assisted (todo con aprobacion), autonomous (sin aprobacion)."
         },
         "freejt7.panel.chatParticipant.enabled": {
           "type": "boolean",
           "default": false,
-          "description": "Activa opcionalmente el chat participant de Free JT7. El panel propio queda como interfaz principal por defecto para no depender del chat host de GitHub Copilot."
-        },
-        "freejt7.copilotRouter.cliPath": {
-          "type": "string",
-          "default": "",
-          "description": "Ruta opcional al binario del GitHub Copilot CLI para el router SDK."
-        },
-        "freejt7.copilotRouter.plannerModel": {
-          "type": "string",
-          "default": "gpt-5.4",
-          "description": "Modelo de Copilot usado para planificacion y sintesis en el router."
-        },
-        "freejt7.copilotRouter.executorCheapModel": {
-          "type": "string",
-          "default": "claude-haiku-4.5",
-          "description": "Modelo barato por defecto para ejecutar subtareas acotadas."
-        },
-        "freejt7.copilotRouter.executorContextModel": {
-          "type": "string",
-          "default": "gemini-3-flash",
-          "description": "Modelo barato alternativo para subtareas con mas contexto."
-        },
-        "freejt7.copilotRouter.executorFallbackModel": {
-          "type": "string",
-          "default": "gpt-5.4",
-          "description": "Modelo de fallback cuando una subtarea es de alto riesgo o falla con un modelo barato."
-        },
-        "freejt7.copilotRouter.reviewEnabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Activa la fase de review loop del router cuando la politica de riesgo lo requiera."
-        },
-        "freejt7.copilotRouter.reviewModel": {
-          "type": "string",
-          "default": "gpt-5.4",
-          "description": "Modelo usado por la segunda pasada de review/verificacion del router."
-        },
-        "freejt7.copilotRouter.reviewMaxFindings": {
-          "type": "number",
-          "default": 12,
-          "minimum": 1,
-          "description": "Numero maximo de findings estructurados que debe devolver la etapa de review."
-        },
-        "freejt7.copilotRouter.reviewMinChangedFiles": {
-          "type": "number",
-          "default": 2,
-          "minimum": 1,
-          "description": "Numero minimo de archivos cambiados para disparar review automatico por multi-file." 
-        },
-        "freejt7.copilotRouter.autoFixEnabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Permite una pasada automatica de remediacion y re-review cuando el gate queda bloqueado por findings abiertos."
-        },
-        "freejt7.copilotRouter.autoFixMaxPasses": {
-          "type": "number",
-          "default": 1,
-          "minimum": 0,
-          "description": "Numero maximo de pasadas de auto-remediacion antes de dejar el gate bloqueado para revision manual."
-        },
-        "freejt7.copilotRouter.experimentalCodeModel": {
-          "type": "string",
-          "default": "",
-          "description": "Modelo opcional para codigo rapido, por ejemplo Grok Code Fast 1 si tu tenant lo expone."
-        },
-        "freejt7.copilotRouter.autoApproveSafeTools": {
-          "type": "boolean",
-          "default": true,
-          "description": "Aprueba automaticamente tools seguras del SDK y bloquea shells destructivas conocidas."
+          "description": "Activa opcionalmente el chat participant de Free JT7. El panel propio queda como interfaz principal por defecto."
         },
         "freejt7.apiProvider": {
           "type": "string",
-          "enum": ["copilot", "openrouter", "hf", "zai", "clod"],
+          "enum": [
+            "openrouter",
+            "hf",
+            "zai",
+            "clod",
+            "openai",
+            "anthropic",
+            "deepseek",
+            "gemini",
+            "local"
+          ],
           "enumDescriptions": [
-            "GitHub Copilot",
             "OpenRouter (default)",
             "HuggingFace",
             "ZAI (ZhipuAI)",
-            "CLŌD (OpenAI-compatible)"
+            "CLŌD (OpenAI-compatible)",
+            "OpenAI API",
+            "Anthropic Claude API",
+            "DeepSeek API",
+            "Google Gemini API",
+            "Modelos locales OpenAI-compatible (Ollama/LM Studio)"
           ],
           "default": "openrouter",
-          "description": "Proveedor de API activo para el agente Free JT7"
+          "description": "Proveedor de API activo para el agente Free JT7 nativo."
         },
         "freejt7.apiProviderModel": {
           "type": "string",
@@ -347,7 +292,20 @@
             "Qwen/Qwen3-235B-A22B-Thinking-2507",
             "zai-org/GLM-5.1",
             "gemini-2.5-flash",
-            "moonshotai/Kimi-K2.5"
+            "moonshotai/Kimi-K2.5",
+            "gpt-4o-mini",
+            "gpt-4.1-mini",
+            "gpt-4.1-nano",
+            "claude-3-5-haiku-latest",
+            "claude-3-7-sonnet-latest",
+            "claude-sonnet-4-0",
+            "deepseek-chat",
+            "deepseek-reasoner",
+            "gemini-2.5-pro",
+            "gemini-2.0-flash",
+            "llama3.1:8b",
+            "qwen2.5-coder:7b",
+            "local-model"
           ],
           "enumDescriptions": [
             "OpenRouter · Hermes 3 Llama 405B (NousResearch)",
@@ -376,15 +334,29 @@
             "CLŌD · Qwen 3 235B Thinking",
             "CLŌD · GLM 5.1 (ZAI)",
             "CLŌD · Gemini 2.5 Flash",
-            "CLŌD · Kimi K2.5 (Moonshot)"
+            "CLŌD · Kimi K2.5 (Moonshot)",
+            "OpenAI · GPT-4o mini",
+            "OpenAI · GPT-4.1 mini",
+            "OpenAI · GPT-4.1 nano",
+            "Anthropic · Claude 3.5 Haiku",
+            "Anthropic · Claude 3.7 Sonnet",
+            "Anthropic · Claude Sonnet 4",
+            "DeepSeek · DeepSeek Chat",
+            "DeepSeek · DeepSeek Reasoner",
+            "Google Gemini · Gemini 2.5 Pro",
+            "Google Gemini · Gemini 2.0 Flash",
+            "Local · Ollama Llama 3.1 8B",
+            "Local · Ollama Qwen 2.5 Coder 7B",
+            "Local · LM Studio local model"
           ],
           "default": "openai/gpt-oss-20b:free",
-          "description": "Modelo específico del proveedor seleccionado. La UI nativa de Settings expone un catálogo base; para CLŌD y modelos no listados, usa el panel propio o la selección manual."
+          "description": "Modelo específico del proveedor seleccionado. La UI nativa de Settings expone un catálogo base para OpenRouter, HF, ZAI, CLŌD, OpenAI, Anthropic, DeepSeek, Gemini y modelos locales; para modelos no listados, usa el panel propio o la selección manual."
         }
       }
     }
   },
   "scripts": {
+    "doctor:native": "node scripts/freejt7-native-autonomy-doctor.js",
     "build:bundle": "node scripts/build-extension-bundle.js",
     "app:standalone": "node scripts/freejt7-app-bootstrap.js",
     "app:standalone:setup": "node scripts/freejt7-app-bootstrap.js --no-launch",
@@ -401,6 +373,7 @@
     "test:control-panel-script-syntax-smoke": "node tests/control_panel_script_syntax_smoke.js",
     "test:panel-execution-mode-smoke": "node tests/panel_execution_mode_smoke.js",
     "test:provider-model-catalog-smoke": "node tests/provider_model_catalog_smoke.js",
+    "test:provider-multi-api-compat-smoke": "node tests/provider_multi_api_compat_smoke.js",
     "test:provider-router-failover-smoke": "node tests/provider_router_failover_smoke.js",
     "test:policy-engine-profiles-smoke": "node tests/policy_engine_profiles_smoke.js",
     "test:session-engine-subagent-tools-smoke": "node tests/session_engine_subagent_tools_smoke.js",
@@ -421,11 +394,26 @@
     "test:session-engine-verification-smoke": "node tests/session_engine_verification_smoke.js",
     "test:installed-extension-smoke": "node tests/installed_extension_smoke.js",
     "test:local-agent-runtime-smoke": "node tests/local_agent_runtime_smoke.js",
+    "test:native-autonomy-doctor-smoke": "node tests/native_autonomy_doctor_smoke.js",
+    "test:offline-smoke-scripts-unit": "node tests/offline_smoke_scripts_unit.js",
+    "test:offline": "node tests/run_offline_tests.js",
+    "test:live": "node tests/run_offline_tests.js --live",
     "test:router-functional-blocked-gate": "node tools/router-functional-blocked-gate.js",
-    "postinstall": "node scripts/fix-copilot-sdk-install.js && node scripts/build-extension-bundle.js",
+    "postinstall": "node scripts/build-extension-bundle.js",
     "package": "cd \"servidor mpc free jt7\" && npm install --production && cd .. && npm run build:bundle && npx @vscode/vsce package --allow-missing-repository --no-dependencies",
     "package:local": "cd \"servidor mpc free jt7\" && npm install --production && cd .. && npm run build:bundle && npx @vscode/vsce package --no-yarn --allow-missing-repository --no-dependencies",
-    "package:win": "node scripts/freejt7-windows-package.js --dry-run"
+    "package:win": "node scripts/freejt7-windows-package.js --dry-run",
+    "test:no-copilot-dependency-smoke": "node tests/no_copilot_dependency_smoke.js",
+    "test:autonomy-comparison-doc-smoke": "node tests/autonomy_comparison_doc_smoke.js",
+    "test:autonomy-maturity-assessor-smoke": "node tests/autonomy_maturity_assessor_smoke.js",
+    "test:task-sandbox-smoke": "node tests/task_sandbox_smoke.js",
+    "test:subagent-parallel-orchestrator-smoke": "node tests/subagent_parallel_orchestrator_smoke.js",
+    "test:semantic-memory-store-smoke": "node tests/semantic_memory_store_smoke.js",
+    "test:review-rollback-smoke": "node tests/review_rollback_smoke.js",
+    "doctor:live-api": "node scripts/freejt7-live-api-gate.js",
+    "doctor:final-install": "node scripts/freejt7-final-install-validator.js",
+    "test:live-api-contract-smoke": "node tests/live_api_contract_smoke.js",
+    "test:final-install-validation-smoke": "node tests/final_install_validation_smoke.js"
   },
   "devDependencies": {
     "@vscode/vsce": "^3.7.1",
@@ -440,7 +428,6 @@
     "url": "https://github.com/javiertarazon/agente-freejt7-extension-funcional/issues"
   },
   "dependencies": {
-    "@github/copilot-sdk": "0.1.32",
     "xml2js": "0.6.2"
   },
   "overrides": {
