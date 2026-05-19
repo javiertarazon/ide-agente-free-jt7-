@@ -13,8 +13,20 @@ BUILD = ["npm","run","build:bundle"]
 
 def run(cmd):
     t0=time.time()
-    p=subprocess.run(cmd, text=True, capture_output=True)
-    return {"cmd":" ".join(cmd),"code":p.returncode,"seconds":round(time.time()-t0,2),"stdout":p.stdout[-2000:],"stderr":p.stderr[-2000:]}
+    try:
+        p=subprocess.run(cmd, text=True, capture_output=True)
+        code=p.returncode
+        stdout=p.stdout[-2000:]
+        stderr=p.stderr[-2000:]
+    except FileNotFoundError as e:
+        code=127
+        stdout=""
+        stderr=f"command not found: {cmd[0]} ({e})"[-2000:]
+    except OSError as e:
+        code=1
+        stdout=""
+        stderr=f"failed to execute command {' '.join(cmd)}: {e}"[-2000:]
+    return {"cmd":" ".join(cmd),"code":code,"seconds":round(time.time()-t0,2),"stdout":stdout,"stderr":stderr}
 
 
 def main():
