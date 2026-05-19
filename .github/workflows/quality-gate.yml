@@ -20,7 +20,5 @@ jobs:
         run: npm ci
       - name: Install python deps
         run: pip install pytest
-      - name: Lint JS syntax gate
-        run: npm run test:control-panel-script-syntax-smoke
       - name: Quality gate (smokes + unit x3 + build)
         run: python tools/quality/run_quality_gate.py --flake-runs 3 --json
