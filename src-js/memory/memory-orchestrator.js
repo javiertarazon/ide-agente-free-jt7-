@@ -17,18 +17,22 @@
 
 const fs   = require('fs');
 const path = require('path');
+const { resolveAgentStateDir } = require('../core/agent-state-paths');
 const { spawnSync } = require('child_process');
 
 // ---------------------------------------------------------------------------
 // Configuración — rutas relativas a la raíz del workspace
 // ---------------------------------------------------------------------------
+const DEFAULT_ROOT_DIR = path.resolve(__dirname, '..', '..');
+const DEFAULT_AGENT_STATE_DIR = resolveAgentStateDir(DEFAULT_ROOT_DIR);
+
 const DEFAULTS = {
-  rootDir:        path.resolve(__dirname, '..', '..'),
+  rootDir:        DEFAULT_ROOT_DIR,
   memoryFile:     'docs/MEMORY.md',
   tasksFile:      'docs/TASKS.md',
-  runsDir:        'copilot-agent/runs',
+  runsDir:        `${DEFAULT_AGENT_STATE_DIR}/runs`,
   datasetFile:    '.agent-learning/dataset.jsonl',
-  stateFile:      'copilot-agent/orchestrator-state.json',
+  stateFile:      `${DEFAULT_AGENT_STATE_DIR}/orchestrator-state.json`,
   // Umbrales de auto-consolidación
   maxRunsSinceConsolidate:  5,       // nuevos runs desde la última consolidación
   maxHoursSinceConsolidate: 12,      // horas máximas entre consolidaciones

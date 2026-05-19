@@ -2,11 +2,12 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveAgentStateDir } = require('./agent-state-paths');
 
 class AuditBus {
   constructor(opts = {}) {
     this.rootDir = opts.rootDir || process.cwd();
-    this.filePath = opts.filePath || path.join(this.rootDir, 'copilot-agent', 'panel-audit.jsonl');
+    this.filePath = opts.filePath || path.join(this.rootDir, resolveAgentStateDir(this.rootDir), 'panel-audit.jsonl');
     this.output = opts.output || null;
     this.remoteBridge = opts.remoteBridge || null;
   }

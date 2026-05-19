@@ -8,6 +8,7 @@ try {
 }
 
 const path = require('path');
+const { resolveAgentStateDir } = require('./agent-state-paths');
 const fs = require('fs');
 const { SessionEngine } = require('./session-engine');
 const { PolicyEngine } = require('./policy-engine');
@@ -2567,7 +2568,7 @@ function createControlPanel(context, output, options = {}) {
   }
 
   function readResumeSnapshot() {
-    const resumePath = path.join(workspacePath || process.cwd(), 'copilot-agent', 'RESUME.md');
+    const resumePath = path.join(workspacePath || process.cwd(), resolveAgentStateDir(workspacePath || process.cwd()), 'RESUME.md');
     try {
       const text = fs.readFileSync(resumePath, 'utf8');
       const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);

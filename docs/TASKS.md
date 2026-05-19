@@ -1115,3 +1115,38 @@
   - [x] Empaquetar instalador nativo `.deb` de Free JT7 Desktop y validar instalacion en Linux actual (con fallback local sin root)
   - [x] Empaquetar instalador nativo `.rpm` de Free JT7 Desktop y validar instalacion en Linux actual (con fallback local sin root)
   - [ ] Empaquetar instalador `.exe` sobre el host propio ya validado
+
+
+## Auditoria estructural profesional y limpieza de duplicados (2026-05-19)
+- [x] Inventario de directorios/scripts y deteccion de duplicados reales/no usados.
+- [x] Eliminacion de duplicados de artefactos locales (`files (1)`, `test-router-2.js`, `test-bypass.js`).
+- [x] Verificacion con pruebas unitarias/smoke de scripts tocados + lint/static checks.
+- [x] Cierre de trazabilidad en `copilot-agent/*` y resumen tecnico.
+
+
+## Evaluacion comparativa Free JT7 vs agentes autonomos profesionales (2026-05-19)
+- [x] Desglosar micro-tareas de comparativa profesional por ejes medibles.
+- [x] Implementar script reproducible de evaluacion (`tools/agent_evaluation/evaluate_freejt7.py`).
+- [x] Agregar prueba unitaria para el evaluador comparativo.
+- [x] Ejecutar unit tests + smokes/lint de verificacion final.
+
+
+## Plan de cierre de brecha competitiva Free JT7 (2026-05-19)
+- [x] Definir plan accionable por fases para cerrar brecha 0.8 detectada en la evaluacion.
+- [x] Mejorar script de evaluacion para emitir roadmap tecnico priorizado.
+- [x] Agregar/ajustar pruebas unitarias del nuevo roadmap.
+- [x] Ejecutar pruebas unitarias y checks smoke/build.
+
+
+## Ejecucion real del cierre de brecha a nivel profesional (2026-05-19)
+- [x] Implementar quality gate reproducible (lint + smokes + unit tests estables x3 + build).
+- [x] Agregar workflow CI para ejecutar gate en PR/push.
+- [x] Ejecutar gate local y registrar metricas reproducibles.
+- [x] Analizar repos publicos de referencia para mejoras reutilizables.
+
+
+## Aclaracion de independencia de Copilot en namespace de estado (2026-05-19)
+- [x] Implementar resolucion de estado agent-first (`freejt7-agent`) con fallback legacy compatible.
+- [x] Aplicar el resolvedor en modulos de estado/auditoria/sesion/memoria.
+- [x] Documentar claramente que `copilot-agent` era namespace historico y no dependencia obligatoria.
+- [x] Ejecutar pruebas unitarias/smoke/build sobre rutas tocadas.

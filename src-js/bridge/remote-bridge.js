@@ -3,12 +3,13 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { resolveAgentStateDir } = require('../core/agent-state-paths');
 const { createHash, randomUUID } = require('crypto');
 const { EventEmitter } = require('events');
 
 const DEFAULTS = {
   rootDir: path.resolve(__dirname, '..', '..'),
-  stateFile: 'copilot-agent/remote-bridge-state.json',
+  stateFile: `${resolveAgentStateDir(path.resolve(__dirname, '..', '..'))}/remote-bridge-state.json`,
   pollInterval: 5000,
   maxEventsPerSession: 80,
   maxResolvedApprovals: 100,

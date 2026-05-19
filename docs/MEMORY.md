@@ -109,3 +109,13 @@ Este archivo evita repetir errores en sesiones futuras. Se actualiza despues de 
 
 ## Historial de bloqueos complejos
 - Pendiente: agregar entradas cuando haya bloqueos con 3+ intentos.
+
+| 2026-05-19 | Existian duplicados de artefactos (`files (1)` y scripts de prueba alternos) que ensuciaban el arbol y la auditoria | Se conservaron durante iteraciones previas sin una limpieza final de snapshots temporales | Regla: despues de estabilizar pruebas, eliminar snapshots/duplicados no referenciados y mantener un unico script canonico por proposito |
+
+| 2026-05-19 | El resumen previo pudo percibirse incompleto al no dejar una comparativa profesional reproducible | Habia limpieza de repo pero faltaba un artefacto evaluable y verificable para comparar capacidades del agente | Regla: cada evaluacion de madurez del agente debe incluir una matriz de puntuacion reproducible + test unitario minimo |
+
+| 2026-05-19 | Una puntuacion sin roadmap concreto no ayuda a cerrar brechas operativas | La salida inicial media el gap pero no traducia el delta a backlog priorizado con KPIs | Regla: toda evaluacion comparativa debe emitir plan P0/P1 con objetivos de 30 dias y KPIs verificables |
+
+| 2026-05-19 | La brecha no se cierra solo con roadmap textual; se necesita gate automatizado | Faltaba enforcement continuo de calidad en PR con pruebas repetidas anti-flake | Regla: toda mejora de nivel profesional debe terminar en quality gate ejecutable en CI y local con metricas |
+
+| 2026-05-19 | El nombre de carpeta `copilot-agent` generaba confusion de dependencia funcional | El namespace historico de estado no estaba desacoplado semanticamente en la documentacion ni en defaults nuevos | Regla: usar `freejt7-agent` como default semantico y mantener fallback legacy solo por compatibilidad |
