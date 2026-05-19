@@ -27,3 +27,5 @@
 | 012 | own-ide / quality gate | N/A | Cierre operativo de brecha con gate reproducible en CI (smokes+unitx3+build) | N/A | N/A | N/A | Veredicto: enforcement tecnico activo; proximo paso: ampliar matriz multi-proveedor en nightly. |
 
 | 013 | own-ide / independencia semantica | N/A | Migracion de namespace de estado a `freejt7-agent` con fallback legacy | N/A | N/A | N/A | Veredicto: se reduce confusion de dependencia Copilot sin romper instalaciones previas. |
+
+| 014 | own-ide / migracion fisica | N/A | Migracion controlada de estado a `freejt7-agent` con rollback | N/A | N/A | N/A | Veredicto: namespace modernizado en disco con contingencia validada. |

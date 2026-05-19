@@ -81,3 +81,5 @@ Propagar este cierre dentro de `20260428-phase256-parallel-integration` y remata
 - 2026-05-19: quality gate profesional implementado (`tools/quality/run_quality_gate.py`) y workflow CI (`.github/workflows/quality-gate.yml`) con unit tests x3 anti-flake.
 
 - 2026-05-19: namespace de estado aclarado; Free JT7 prioriza `freejt7-agent/` y usa `copilot-agent/` solo como compatibilidad historica.
+
+- 2026-05-19: migracion fisica aplicada de `copilot-agent/` a `freejt7-agent/` con backup `.freejt7-agent-migration-backup` y script de rollback.

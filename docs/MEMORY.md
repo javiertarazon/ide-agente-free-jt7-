@@ -119,3 +119,5 @@ Este archivo evita repetir errores en sesiones futuras. Se actualiza despues de 
 | 2026-05-19 | La brecha no se cierra solo con roadmap textual; se necesita gate automatizado | Faltaba enforcement continuo de calidad en PR con pruebas repetidas anti-flake | Regla: toda mejora de nivel profesional debe terminar en quality gate ejecutable en CI y local con metricas |
 
 | 2026-05-19 | El nombre de carpeta `copilot-agent` generaba confusion de dependencia funcional | El namespace historico de estado no estaba desacoplado semanticamente en la documentacion ni en defaults nuevos | Regla: usar `freejt7-agent` como default semantico y mantener fallback legacy solo por compatibilidad |
+
+| 2026-05-19 | Mantener solo resolvedor logico no eliminaba deuda de nomenclatura en disco | Sin migracion fisica, seguia ambiguedad operativa en herramientas externas | Regla: cuando haya namespace legado sensible, completar migracion fisica con backup+rollback verificable |

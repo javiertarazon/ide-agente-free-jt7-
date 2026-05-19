@@ -1150,3 +1150,10 @@
 - [x] Aplicar el resolvedor en modulos de estado/auditoria/sesion/memoria.
 - [x] Documentar claramente que `copilot-agent` era namespace historico y no dependencia obligatoria.
 - [x] Ejecutar pruebas unitarias/smoke/build sobre rutas tocadas.
+
+
+## Migracion fisica controlada copilot-agent -> freejt7-agent (2026-05-19)
+- [x] Implementar script de migracion con backup y merge seguro.
+- [x] Implementar rollback restaurando namespace legacy desde backup.
+- [x] Ejecutar migracion real del workspace.
+- [x] Ejecutar pruebas unitarias/smoke/build post-migracion.
