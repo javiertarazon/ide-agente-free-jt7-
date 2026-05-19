@@ -2385,3 +2385,15 @@ tareas:
     resultado: >
       Migracion aplicada con script `tools/quality/migrate_agent_state_dir.py`,
       backup creado y pruebas post-migracion en verde.
+  - id: "20260519-fase1-compaction-manager"
+    fecha: "2026-05-19"
+    titulo: "Ejecutar plan Fase 1: compaction manager"
+    descripcion: >
+      Implementar compactacion de historial conversacional para reducir degradacion
+      en sesiones largas y mejorar continuidad agent-first.
+    estado: "completado"
+    riesgo: "low"
+    skills_usados: []
+    resultado: >
+      Se creo `context-compaction.js`, se integro en `chat-context` y se agrego smoke
+      dedicada con verificacion en verde.

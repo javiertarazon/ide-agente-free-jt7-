@@ -29,3 +29,5 @@
 | 013 | own-ide / independencia semantica | N/A | Migracion de namespace de estado a `freejt7-agent` con fallback legacy | N/A | N/A | N/A | Veredicto: se reduce confusion de dependencia Copilot sin romper instalaciones previas. |
 
 | 014 | own-ide / migracion fisica | N/A | Migracion controlada de estado a `freejt7-agent` con rollback | N/A | N/A | N/A | Veredicto: namespace modernizado en disco con contingencia validada. |
+
+| 015 | own-ide / compaction | N/A | Fase 1 ejecutada: compactador de contexto integrado al chat runtime | N/A | N/A | N/A | Veredicto: contexto mas controlado con metrica de compresion; proximo paso: memoria semantica asincrona. |

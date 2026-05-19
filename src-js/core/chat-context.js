@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const HISTORY_LIMIT = 12;
+const { compactConversationHistory } = require('./context-compaction');
 const MAX_PATHS = 3;
 const MAX_PATH_SCAN_LENGTH = 260;
 const MAX_FILE_PREVIEW_CHARS = 900;
@@ -238,7 +239,8 @@ function buildConversationRequest(options = {}) {
   const prompt = String(options.prompt || options.text || '').trim();
   const sessionTitle = String(options.sessionTitle || '').trim();
   const history = stripDuplicatePrompt(normalizeConversationHistory(options.history), prompt);
-  const trimmedHistory = history.slice(-HISTORY_LIMIT);
+  const compaction = compactConversationHistory(history, { maxMessages: HISTORY_LIMIT });
+  const trimmedHistory = compaction.history;
   const textForLocalContext = [
     prompt,
     ...trimmedHistory.map((entry) => entry.content),

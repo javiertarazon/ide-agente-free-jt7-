@@ -1157,3 +1157,10 @@
 - [x] Implementar rollback restaurando namespace legacy desde backup.
 - [x] Ejecutar migracion real del workspace.
 - [x] Ejecutar pruebas unitarias/smoke/build post-migracion.
+
+
+## Ejecucion del plan Fase 1: compaction manager (2026-05-19)
+- [x] Implementar compactador de historial conversacional con meta de compresion.
+- [x] Integrar compactacion en `buildConversationRequest` sin romper contrato actual.
+- [x] Agregar smoke test dedicada para la compactacion.
+- [x] Ejecutar unit/smoke/build post-cambio.

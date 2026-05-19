@@ -83,3 +83,5 @@ Propagar este cierre dentro de `20260428-phase256-parallel-integration` y remata
 - 2026-05-19: namespace de estado aclarado; Free JT7 prioriza `freejt7-agent/` y usa `copilot-agent/` solo como compatibilidad historica.
 
 - 2026-05-19: migracion fisica aplicada de `copilot-agent/` a `freejt7-agent/` con backup `.freejt7-agent-migration-backup` y script de rollback.
+
+- 2026-05-19: ejecutada Fase 1 del plan (compaction manager) en `chat-context` con metadatos de historial compactado y smoke dedicada.
