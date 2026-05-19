@@ -503,8 +503,6 @@ function buildSubordinateBackendDescriptor(options = {}) {
     kind = 'openclaw-harness';
   } else if (/local-agent/i.test(executionRoute) || runtimeBackend === 'local') {
     kind = 'local-tools';
-  } else if (executionRoute === 'copilot' || runtimeBackend === 'copilot') {
-    kind = 'copilot-legacy';
   } else {
     kind = executionRoute || runtimeBackend || 'unknown-backend';
   }

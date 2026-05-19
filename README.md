@@ -1,6 +1,6 @@
-﻿# Agente Free JT7 Extension Funcional
+# Agente Free JT7 Extension Funcional
 
-Version: `4.2.11`
+Version: `4.2.12`
 
 Repositorio funcional del runtime Free JT7 para VS Code y otros IDE compatibles:
 - ejecutable por CLI (`skills_manager.py`)
@@ -14,6 +14,14 @@ Repositorio funcional del runtime Free JT7 para VS Code y otros IDE compatibles:
 - Configuracion de agente, policy y model routing incluida.
 - Extension VS Code incluida (`package.json` + `extension.js`).
 - Variante Linux documentada y validada en la rama `feature/linux-v4.2.3`.
+
+## Estado de publicacion v4.2.12 (2026-05-18)
+
+- Rama preparada para remoto: `release/v4.2.12-native-autonomy-product`.
+- Ruta principal nativa sin dependencia funcional de GitHub Copilot SDK/router legacy.
+- Hardening de producto: sandbox por tarea con aislamiento de procesos, subagentes paralelos, memoria semantica, review/rollback y UI visual de plan/diff/evidencia.
+- Gates de validacion: `npm run doctor:native`, `npm run test:offline`, `npm run doctor:live-api` (opt-in con credenciales) y `npm run doctor:final-install`.
+- Trazabilidad de publicacion: `docs/24-PUBLICACION-REMOTA-V4.2.12-AUTONOMIA-PRODUCTO-2026-05-18.md`.
 
 ## Ultimas modificaciones destacadas
 

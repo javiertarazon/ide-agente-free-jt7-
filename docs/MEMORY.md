@@ -109,3 +109,13 @@ Este archivo evita repetir errores en sesiones futuras. Se actualiza despues de 
 
 ## Historial de bloqueos complejos
 - Pendiente: agregar entradas cuando haya bloqueos con 3+ intentos.
+- 2026-05-15: Los smokes de autonomia no deben depender por defecto de secretos privados, una extension VS Code instalada o login Copilot live. Cuando el objetivo sea validar logica local, ofrecer fallback offline verificable y reservar el modo estricto para `test:live` o variables explicitas.
+
+- 2026-05-15: Al agregar pruebas unitarias a scripts CLI, primero proteger el entrypoint con `if (require.main === module)` antes de importarlos desde tests; si no, el smoke puede ejecutar side effects reales (estado remoto, plugins temporales) durante el `require`.
+
+| 2026-05-15 | El build postinstall quedo apuntando al router Copilot eliminado | `bundle-entry.js` seguia requiriendo `src-js/core/copilot_router.runtime.js` despues de retirar el runtime legacy | Regla: al eliminar un runtime legacy, revisar tambien entradas de bundle/postinstall y agregar un smoke anti-dependencia antes de cerrar |
+
+| 2026-05-15 | Parsear salida de `npm run` como JSON fallo por banners de npm | `npm run doctor:native -- --json` imprime cabecera npm antes del JSON, por lo que `require()` de la salida completa no es valido | Regla: para checks JSON automatizados, invocar directamente el script Node subyacente o extraer el bloque JSON antes de parsear |
+
+| 2026-05-18 | El push remoto de release v4.2.12 fallo desde el contenedor | La red solo resuelve GitHub via proxy y el proxy devolvio `CONNECT tunnel failed, response 403`; sin proxy `github.com` no resuelve | Regla: antes de prometer publicacion remota, verificar `git remote -v`, `git ls-remote` y acceso de red; si el entorno bloquea GitHub, dejar rama/commit/lista de comandos para ejecutar desde host con acceso |
+| 2026-05-18 | El reintento con token GitHub tampoco pudo publicar la rama | El fallo ocurre antes de autenticacion, en el tunel proxy (`CONNECT tunnel failed, response 403`), por lo que una credencial valida no corrige el bloqueo de red | Regla: separar fallos de credencial de fallos de transporte; si `CONNECT tunnel failed` aparece antes de prompt/auth, registrar bloqueo de red y no reintentar exponiendo secretos |

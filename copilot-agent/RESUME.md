@@ -1,3 +1,19 @@
+# Cierre - 2026-05-15T03:26:20Z
+- Run completado: `20260515-autonomous-agent-audit-fixes`.
+- Resultado: corregidos tres bloqueos de verificabilidad autonoma: CLŌD sin API key, extension instalada ausente y drill funcional Copilot sin autenticacion live.
+- Nuevo soporte: `npm run test:offline` agrupa smokes locales; `npm run test:live` exige modo estricto para instalaciones/autenticacion reales.
+- Documentacion nueva: `docs/22-AUDITORIA-OPERATIVA-AGENTE-AUTONOMO-2026-05-15.md`.
+- Validacion: build, suite `test:offline`, pytest relevante y smokes adicionales de runtime/providers/session engine ejecutados correctamente.
+- Intake obligatorio, resolucion de skills, decision de delegacion y trazabilidad: completados.
+
+# Actualizacion en curso - 2026-05-15T03:18:13Z
+- Run activo: `20260515-autonomous-agent-audit-fixes`.
+- Objetivo: auditar y corregir fallos operativos que impidan a Free JT7 funcionar como agente autonomo nativo de su propia IDE con providers API, skills, MCP y subagentes.
+- Intake obligatorio: completado por especificacion directa del usuario.
+- Skills: sin skill externa especifica aplicable.
+- Delegacion: no usada; la peticion menciona subagentes como capacidad del producto, no como autorizacion explicita para delegar esta ejecucion.
+- Validacion prevista: pruebas unitarias/smoke de scripts modificados y checks base.
+
 # Estado actual
 *Actualizado: 2026-04-28 23:25 UTC*
 - Últimos runs en progreso: `20260428-phase256-parallel-integration` (2026-04-28).
@@ -71,3 +87,92 @@ Propagar este cierre dentro de `20260428-phase256-parallel-integration` y remata
   - `6e73366` — `docs(agent): Publish own-ide audit and roadmap updates`
   - `5a28520` — `build(app): Add own-ide bootstrap and packaged assets`
 - Limite operativo aplicado: se dejan fuera del historial Git solo cuatro binarios mayores de 100 MB (`.deb`, `.rpm` y dos `.vsix` embebidas) porque GitHub los rechaza sin Git LFS.
+
+
+## Continuacion pruebas unitarias de smokes offline (2026-05-15)
+- Run: `20260515-offline-smoke-scripts-unit-tests`.
+- Alcance: scripts `tests/run_offline_tests.js`, `tests/clod_provider_smoke.js`, `tests/installed_extension_smoke.js` y `tools/router-functional-blocked-gate.js`.
+- Resultado: scripts convertidos a modulos importables sin ejecutar side effects al `require`; nuevo `tests/offline_smoke_scripts_unit.js` cubre runner offline/live, seleccion de modelo CLŌD, resolucion de extension instalada/workspace y fallback blocked-gate.
+- Delegacion: no usada; la tarea era acotada y no hubo solicitud explicita de sub-agentes.
+- Validacion objetivo: `node tests/offline_smoke_scripts_unit.js`, `npm run test:offline`, `npm run build:bundle`, `git diff --check`.
+
+
+## Compatibilidad proveedores API y modelos locales (2026-05-15)
+- Run: `20260515-provider-compat-openai-anthropic-deepseek-gemini-local`.
+- Alcance: registry/config/adaptador de providers, Settings de VS Code y smokes offline.
+- Resultado: agregados proveedores directos `openai`, `anthropic`, `deepseek`, `gemini` y `local`; se mantienen `openrouter`, `hf`, `zai`, `clod` y `copilot` legacy. `local` usa endpoint OpenAI-compatible sin API key obligatoria (`FREEJT7_LOCAL_CHAT_COMPLETIONS_URL` u Ollama por defecto).
+- Validacion objetivo: smokes de registry/model catalog, llamada API mock multi-provider, streaming, modo direct, build y test offline.
+- Delegacion: no usada; tarea acotada y sin solicitud explicita de sub-agentes.
+
+
+## Doctor autonomia nativa, tools, MCP, skills y empaquetado (2026-05-15)
+- Run: `20260515-native-autonomy-doctor-tools-packaging`.
+- Alcance: `doctor:native`, runtime doctor, MCP/MT5, autoaprendizaje, skills/subagentes, UI nativa, modos tipo Trae/Codex y empaquetado own-IDE.
+- Resultado: nuevo doctor offline centralizado con 58 checks requeridos en verde; se integra con `freejt7.runtimeDoctor` y con `npm run test:offline` mediante `test:native-autonomy-doctor-smoke`.
+- Validacion objetivo: `npm run doctor:native`, smoke dedicado, smokes MCP/MT5/UI/packaging y suite offline.
+- Delegacion: no usada; tarea acotada y sin solicitud explicita de sub-agentes.
+
+
+## Eliminacion dependencia GitHub Copilot ruta nativa (2026-05-15)
+- Run: `20260515-remove-github-copilot-native-dependency`.
+- Alcance: package/scripts/runtime/tests para que Free JT7 use providers nativos, modelos locales y tool gate propio sin Copilot SDK, CLI, auth ni modelos de suscripcion GitHub.
+- Resultado: eliminado `@github/copilot-sdk`, removido el router legacy, sustituido por `native-router-core`, bundle sin exports Copilot, bootstrap standalone sin settings/extensiones GitHub y smoke anti-dependencia agregado.
+- Validacion: `node tests/no_copilot_dependency_smoke.js`, smokes de router nativo/bootstrap/provider/session y `npm run test:offline` OK.
+- Delegacion: no usada; no hubo solicitud explicita de sub-agentes y el cambio fue transversal pero controlado.
+
+
+## Comparativa autonomia Free JT7 vs Codex vs Trae (2026-05-15)
+- Run: `20260515-freejt7-codex-trae-autonomy-comparison`.
+- Alcance: workflow, desglose, subagentes, memoria persistente, tools/skills, MCP, privilegios y proveedores de modelos.
+- Resultado: nueva comparativa `docs/23-COMPARATIVA-FREEJT7-CODEX-TRAE-AUTONOMIA-2026-05-15.md`; Free JT7 queda estimado en 76/100, cerca funcionalmente pero con brechas en paralelismo, sandbox, memoria semantica, conectores productivos y UX de review/rollback.
+- Validacion: `node tests/autonomy_comparison_doc_smoke.js`, doctor nativo JSON, `npm run build:bundle`, `npm run test:offline` y `git diff --check`.
+- Delegacion: no usada; no hubo solicitud explicita de sub-agentes externos y el entregable fue una auditoria documental acotada.
+
+
+## Gate cierre brechas autonomia Free JT7 (2026-05-15)
+- Run: `20260515-autonomy-gap-closure-gate`.
+- Alcance: convertir la puntuacion 76/100 en un gate verificable para no declarar cerrada la brecha sin evidencia.
+- Resultado: nuevo `autonomy-maturity-assessor` integrado en `doctor:native`; el estado actual queda `partial`, con warnings para sandboxing, paralelismo de subagentes, memoria semantica y UX review/rollback.
+- Validacion: smokes de documento, assessor y doctor; `npm run build:bundle`; `npm run test:offline`; `git diff --check`.
+- Delegacion: no usada; no hubo solicitud explicita de sub-agentes y el cambio fue acotado.
+
+
+## Cierre tecnico brechas autonomia Free JT7 (2026-05-16)
+- Run: `20260516-close-autonomy-technical-gaps`.
+- Alcance: sandbox por tarea, subagentes paralelos, memoria semantica local y review/rollback.
+- Resultado: implementados `task-sandbox`, `subagent-orchestrator`, `semantic-memory-store` y `review-rollback`; el gate `autonomyMaturity` queda `closed` con score 90 y sin warnings en doctor nativo.
+- Validacion: smokes nuevos, smoke del assessor, doctor nativo JSON, `npm run build:bundle`, `npm run test:offline` y `git diff --check`.
+- Riesgo residual: cierre minimo offline; falta hardening de producto para aislamiento de procesos, UI visual avanzada y pruebas live con proveedores reales.
+- Delegacion: no usada; no hubo solicitud explicita de sub-agentes y la implementacion se aislo en modulos nuevos.
+
+## Hardening avanzado producto autonomia Free JT7 (2026-05-17) — inicio
+- Run: `20260517-advanced-product-hardening`.
+- Intake obligatorio: asumido por claridad del usuario. Entregable esperado: codigo + smokes + trazabilidad para aislamiento real de procesos, UI visual avanzada de planes/diffs, pruebas live opt-in y validacion de instalacion final own-IDE.
+- Restricciones/no-goals: mantener offline por defecto, no reintroducir Copilot, no exigir credenciales reales en CI local.
+- Skills: no aplica skill local especializada para esta tarea; se aplican patrones internos existentes y buenas practicas de agentes autonomos.
+- Delegacion: no usada; el cambio es transversal y requiere ownership central para minimizar conflictos.
+
+## Hardening avanzado producto autonomia Free JT7 (2026-05-17) — cierre
+- Run: `20260517-advanced-product-hardening`.
+- Resultado: sandbox con procesos aislados (`shell:false`), timeout y entorno saneado; subagentes pueden ejecutar comandos aislados; panel muestra workflow visual de plan/diff/review/rollback; se agregan gates opt-in para APIs reales y validacion final de instalacion own-IDE.
+- Validacion ejecutada: smokes unitarios nuevos/actualizados, `npm run doctor:native`, `npm run build:bundle`, `npm run test:offline` y `git diff --check`.
+- Riesgo residual: las pruebas live reales requieren credenciales/API disponibles y la validacion final estricta debe apuntar a una extension instalada real mediante `FREEJT7_INSTALLED_EXTENSION_DIR`.
+
+## Publicacion remota v4.2.12 autonomia producto (2026-05-18) — inicio
+- Run: `20260518-release-v4-2-12-remote-publish`.
+- Entregable: rama remota nueva `release/v4.2.12-native-autonomy-product` con version `4.2.12`, documentacion, trazabilidad y memoria de tareas actualizadas.
+- Restricciones: no usar force-push, no inventar credenciales si el remoto rechaza autenticacion, mantener live APIs como opt-in.
+- Skills: no aplica skill especifica; se usa flujo interno de release/trazabilidad.
+- Delegacion: no usada porque la publicacion remota es secuencial y depende del estado Git/credenciales del workspace.
+
+## Publicacion remota v4.2.12 autonomia producto (2026-05-18) — cierre bloqueado por red
+- Run: `20260518-release-v4-2-12-remote-publish`.
+- Resultado local: rama `release/v4.2.12-native-autonomy-product` creada, version `4.2.12`, documentacion/trazabilidad/memoria actualizadas y verificaciones OK.
+- Push remoto: bloqueado por entorno. `git push -u origin release/v4.2.12-native-autonomy-product` devolvio `CONNECT tunnel failed, response 403`; sin proxy, `github.com` no resuelve.
+- Comando pendiente para host con acceso GitHub: `git push -u origin release/v4.2.12-native-autonomy-product`.
+
+## Reintento push remoto con token GitHub (2026-05-18) — bloqueado por proxy
+- Run: `20260518-github-token-push-retry`.
+- Accion: se configuro `origin`, se creo la rama local `release/v4.2.12-native-autonomy-product` y se intento publicar con credencial temporal mediante `GIT_ASKPASS`.
+- Resultado: `git push -u origin release/v4.2.12-native-autonomy-product` fallo con `CONNECT tunnel failed, response 403` antes de autenticacion GitHub.
+- Seguridad: no se guardo el token en Git config ni en archivos del repositorio.

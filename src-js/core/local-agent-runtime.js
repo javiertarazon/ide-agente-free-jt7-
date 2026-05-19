@@ -1029,7 +1029,7 @@ async function runLocalAgentTask(goal, options = {}) {
     toolResults.push(runSafeCommand(spec, workspacePath));
   }
 
-  technicalSummaryLines.push('Free JT7 ejecuto una ruta local de agente con herramientas basicas, sin depender de Copilot ni OpenClaw.');
+  technicalSummaryLines.push('Free JT7 ejecuto una ruta local de agente con herramientas basicas, sin depender de servicios de suscripcion externos ni OpenClaw.');
   if (options.fallbackReason) {
     technicalSummaryLines.push(`Motivo del fallback local: ${String(options.fallbackReason).trim()}`);
   }

@@ -29,7 +29,7 @@ const PANEL_DEFAULT_PROVIDER = 'openrouter';
 
 function normalizePanelProviderValue(provider) {
   const value = String(provider || '').trim().toLowerCase();
-  if (!value || value === 'copilot') return PANEL_DEFAULT_PROVIDER;
+  if (!value) return PANEL_DEFAULT_PROVIDER;
   if (value === 'huggingface' || value === 'hugging-face') return 'hf';
   if (value === 'zhipu' || value === 'zhipuai') return 'zai';
   if (value === 'openrouter' || value === 'hf' || value === 'zai' || value === 'clod') return value;
@@ -791,6 +791,68 @@ function createPanelHtml(webview, title, panelCatalog, panelOptions = {}) {
       color: var(--muted);
     }
 
+
+
+    .workflow-review {
+      margin-top: 10px;
+      border: 1px solid rgba(107, 225, 192, 0.28);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(17, 31, 51, 0.82), rgba(9, 16, 26, 0.78));
+      overflow: hidden;
+    }
+
+    .workflow-review-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 10px;
+      border-bottom: 1px solid rgba(97, 130, 170, 0.18);
+      font-size: 12px;
+      color: var(--txt);
+    }
+
+    .workflow-lanes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .workflow-lane {
+      min-height: 56px;
+      padding: 9px;
+      border-right: 1px solid rgba(97, 130, 170, 0.16);
+    }
+
+    .workflow-lane:last-child { border-right: 0; }
+
+    .workflow-lane-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .workflow-lane-body {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #dbeaff;
+    }
+
+    .diff-preview {
+      margin: 0 9px 9px;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(3, 8, 14, 0.55);
+      border: 1px solid rgba(97, 130, 170, 0.16);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      color: #cfe1fb;
+      max-height: 120px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+
     .event-item {
       padding: 10px 0;
       border-bottom: 1px dashed rgba(97, 130, 170, 0.2);
@@ -1513,6 +1575,61 @@ function createPanelHtml(webview, title, panelCatalog, panelOptions = {}) {
       $('statRiskHigh').textContent = String(highRisk);
     }
 
+    function summarizeArray(value, emptyText) {
+      if (!Array.isArray(value) || !value.length) return emptyText;
+      return value.slice(0, 4).map((item) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object') return item.title || item.path || item.file || item.summary || item.command || JSON.stringify(item);
+        return String(item || '');
+      }).filter(Boolean).join(' · ') || emptyText;
+    }
+
+    function extractWorkflowArtifacts(task) {
+      const routePlan = task && task.routePlan && typeof task.routePlan === 'object' ? task.routePlan : {};
+      const routeMeta = task && task.routeMeta && typeof task.routeMeta === 'object' ? task.routeMeta : {};
+      const executionPlan = routeMeta.executionPlan && typeof routeMeta.executionPlan === 'object' ? routeMeta.executionPlan : {};
+      const review = task && task.review && typeof task.review === 'object' ? task.review : {};
+      const rollback = task && task.rollback && typeof task.rollback === 'object' ? task.rollback : {};
+      const diff = task && task.diffPreview ? task.diffPreview : (review.diffPreview || review.diff || routeMeta.diffPreview || '');
+      const steps = routePlan.steps || executionPlan.steps || routePlan.microtasks || [];
+      const files = review.files || routePlan.files || routeMeta.files || [];
+      const evidence = task && task.verification && Array.isArray(task.verification.evidence) ? task.verification.evidence : [];
+      return {
+        steps,
+        files,
+        diff,
+        reviewStatus: review.status || task.reviewStatus || (task.status === 'waiting_approval' ? 'pendiente' : 'auto'),
+        rollbackStatus: rollback.status || (rollback.available ? 'disponible' : 'snapshot pendiente'),
+        evidence,
+      };
+    }
+
+    function appendWorkflowReview(card, task) {
+      const artifacts = extractWorkflowArtifacts(task);
+      const hasVisualEvidence = artifacts.steps.length || artifacts.files.length || artifacts.diff || artifacts.evidence.length || artifacts.reviewStatus !== 'auto';
+      if (!hasVisualEvidence) return;
+      const wrapper = document.createElement('section');
+      wrapper.className = 'workflow-review';
+      wrapper.innerHTML =
+        '<div class="workflow-review-title">' +
+          '<span>Plan visual · diff · review · rollback</span>' +
+          '<span class="chip">producto</span>' +
+        '</div>' +
+        '<div class="workflow-lanes">' +
+          '<div class="workflow-lane"><div class="workflow-lane-title">Plan</div><div class="workflow-lane-body">' + escapeHtml(summarizeArray(artifacts.steps, 'Sin pasos publicados')) + '</div></div>' +
+          '<div class="workflow-lane"><div class="workflow-lane-title">Diff</div><div class="workflow-lane-body">' + escapeHtml(summarizeArray(artifacts.files, artifacts.diff ? 'Preview disponible' : 'Sin cambios detectados')) + '</div></div>' +
+          '<div class="workflow-lane"><div class="workflow-lane-title">Review</div><div class="workflow-lane-body">' + escapeHtml(String(artifacts.reviewStatus || 'auto')) + '</div></div>' +
+          '<div class="workflow-lane"><div class="workflow-lane-title">Rollback</div><div class="workflow-lane-body">' + escapeHtml(String(artifacts.rollbackStatus || 'snapshot pendiente')) + '</div></div>' +
+        '</div>';
+      if (artifacts.diff) {
+        const diffPreview = document.createElement('pre');
+        diffPreview.className = 'diff-preview';
+        diffPreview.textContent = String(artifacts.diff).slice(0, 1200);
+        wrapper.appendChild(diffPreview);
+      }
+      card.appendChild(wrapper);
+    }
+
     function extractTaskSummary(task) {
       function isJunkSummary(value) {
         const text = String(value || '').trim();
@@ -1729,6 +1846,8 @@ function createPanelHtml(webview, title, panelCatalog, panelOptions = {}) {
             + (ops ? ' | ops: ' + ops : '');
           card.appendChild(detail);
         }
+
+        appendWorkflowReview(card, task);
 
         const summary = extractTaskSummary(task);
         if (summary) {
@@ -2234,7 +2353,6 @@ function createControlPanel(context, output, options = {}) {
     context,
     output,
     agentRuntime: options.agentRuntime || null,
-    executeCopilotTask: options.executeCopilotTask,
     executeAgentTask: options.executeAgentTask,
     executeAcpTask: options.executeAcpTask,
     workspacePath,
@@ -2384,7 +2502,7 @@ function createControlPanel(context, output, options = {}) {
     const authProfile = await getPersistedAuthProfile();
     const fallbackProviders = await getPersistedFallbackProviders();
     const provider = await getPersistedActiveProvider();
-    const normalizedProvider = provider === 'copilot' ? PANEL_DEFAULT_PROVIDER : provider;
+    const normalizedProvider = isKnownPanelProvider(provider, catalog) ? provider : PANEL_DEFAULT_PROVIDER;
     const configuredModel = selections[normalizedProvider] || '';
     const model = configuredModel || selections[provider] || freeModelsCatalog.getDefaultModel(provider) || '';
     const sanitized = sanitizePanelProviderConfig({
@@ -2926,9 +3044,7 @@ function createControlPanel(context, output, options = {}) {
 
         if (type === 'provider.test') {
           const provider = String(msg.provider || '').trim() || (await getActiveProviderConfig()).provider;
-          const model = provider === 'copilot'
-            ? ''
-            : String(msg.model || '').trim() || (await getActiveProviderConfig()).model;
+          const model = String(msg.model || '').trim() || (await getActiveProviderConfig()).model;
           try {
             const result = await providerRouter.execute({
               goal: 'Responde solo con OK y el modelo usado.',

@@ -2,10 +2,11 @@
 /**
  * api-provider-adapter.js
  * Adaptador de proveedores externos de API para el agente Free JT7.
- * Soporta: OpenRouter, HuggingFace (HF) y ZAI (ZhipuAI).
- * Devuelve el mismo shape que runCopilotRouter para compatibilidad con formatRouterMarkdown.
+ * Soporta: OpenRouter, HuggingFace (HF), ZAI, CLŌD, OpenAI, Anthropic, DeepSeek, Gemini y endpoints locales OpenAI-compatible.
+ * Devuelve el mismo shape de resultado usado por formatRouterMarkdown.
  */
 
+const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
@@ -55,7 +56,30 @@ const FREE_PROVIDER_MODELS = Object.freeze({
     { label: "Gemini 2.5 Flash (Google)", value: "gemini-2.5-flash" },
     { label: "Kimi K2.5 (Moonshot)", value: "moonshotai/Kimi-K2.5" },
   ],
-  copilot: [],
+  openai: [
+    { label: "GPT-4o mini", value: "gpt-4o-mini" },
+    { label: "GPT-4.1 mini", value: "gpt-4.1-mini" },
+    { label: "GPT-4.1 nano", value: "gpt-4.1-nano" },
+  ],
+  anthropic: [
+    { label: "Claude 3.5 Haiku", value: "claude-3-5-haiku-latest" },
+    { label: "Claude 3.7 Sonnet", value: "claude-3-7-sonnet-latest" },
+    { label: "Claude Sonnet 4", value: "claude-sonnet-4-0" },
+  ],
+  deepseek: [
+    { label: "DeepSeek Chat", value: "deepseek-chat" },
+    { label: "DeepSeek Reasoner", value: "deepseek-reasoner" },
+  ],
+  gemini: [
+    { label: "Gemini 2.5 Flash", value: "gemini-2.5-flash" },
+    { label: "Gemini 2.5 Pro", value: "gemini-2.5-pro" },
+    { label: "Gemini 2.0 Flash", value: "gemini-2.0-flash" },
+  ],
+  local: [
+    { label: "Ollama Llama 3.1 8B", value: "llama3.1:8b" },
+    { label: "Ollama Qwen 2.5 Coder 7B", value: "qwen2.5-coder:7b" },
+    { label: "LM Studio local model", value: "local-model" },
+  ],
 });
 
 const FREE_PROVIDER_DEFAULT_MODELS = Object.freeze({
@@ -63,7 +87,11 @@ const FREE_PROVIDER_DEFAULT_MODELS = Object.freeze({
   hf: "Qwen/Qwen2.5-7B-Instruct-Turbo",
   zai: "glm-4.5-flash",
   clod: "OpenAI/gpt-oss-20B",
-  copilot: "",
+  openai: "gpt-4o-mini",
+  anthropic: "claude-3-5-haiku-latest",
+  deepseek: "deepseek-chat",
+  gemini: "gemini-2.5-flash",
+  local: "llama3.1:8b",
 });
 
 function cloneModelEntries(entries) {
@@ -95,6 +123,11 @@ const PROVIDER_OUTPUT_TOKENS = {
   hf:         1200,
   zai:        1500,
   clod:       1500,
+  openai:     1500,
+  anthropic:  1500,
+  deepseek:   1500,
+  gemini:     1500,
+  local:      1500,
 };
 
 // ---------------------------------------------------------------------------
@@ -133,7 +166,15 @@ function readProcessEnv(provider) {
     hf: "HUGGINGFACE_API_KEY",
     zai: "ZAI_API_KEY",
     clod: "CLOD_API_KEY",
+    openai: "OPENAI_API_KEY",
+    anthropic: "ANTHROPIC_API_KEY",
+    deepseek: "DEEPSEEK_API_KEY",
+    gemini: "GEMINI_API_KEY",
+    local: "FREEJT7_LOCAL_API_KEY",
   };
+  if (provider === "local") {
+    return process.env.FREEJT7_LOCAL_API_KEY || process.env.OLLAMA_API_KEY || process.env.LMSTUDIO_API_KEY || null;
+  }
   return process.env[keyMap[provider]] || null;
 }
 
@@ -166,6 +207,11 @@ function readEnvApiFile(provider, options = {}) {
     hf: "HUGGINGFACE_API_KEY",
     zai: "ZAI_API_KEY",
     clod: "CLOD_API_KEY",
+    openai: "OPENAI_API_KEY",
+    anthropic: "ANTHROPIC_API_KEY",
+    deepseek: "DEEPSEEK_API_KEY",
+    gemini: "GEMINI_API_KEY",
+    local: "FREEJT7_LOCAL_API_KEY",
   };
   // Patrones alternativos para formato legible: "email provider: key" o "provider:key"
   // Cada patrón es específico para evitar falsos positivos (ej: modelos como openrouter:anthropic/claude)
@@ -174,6 +220,11 @@ function readEnvApiFile(provider, options = {}) {
     hf:         /\bhf:(hf_\S+)/i,
     zai:        /\bzai:\s*([a-f0-9]{32}\.\S+)/i,
     clod:       /\bclod:\s*(\S+)/i,
+    openai:     /\bopenai:\s*(\S+)/i,
+    anthropic:  /\b(?:anthropic|claude):\s*(\S+)/i,
+    deepseek:   /\bdeepseek:\s*(\S+)/i,
+    gemini:     /\b(?:gemini|google):\s*(\S+)/i,
+    local:      /\b(?:local|ollama|lmstudio):\s*(\S+)/i,
   };
   for (const filePath of candidates) {
     if (!fs.existsSync(filePath)) continue;
@@ -470,10 +521,12 @@ const HTTP_TIMEOUT_MS = 90000;
 function httpsJson(url, { method = "GET", headers = {}, body } = {}) {
   return new Promise((resolve, reject) => {
     const parsed = new URL(url);
+    const transport = parsed.protocol === "http:" ? http : https;
     const hasBody = body !== undefined;
     const data = hasBody ? JSON.stringify(body) : "";
     const options = {
       hostname: parsed.hostname,
+      port: parsed.port || undefined,
       path: parsed.pathname + (parsed.search || ""),
       method,
       timeout: HTTP_TIMEOUT_MS,
@@ -485,7 +538,7 @@ function httpsJson(url, { method = "GET", headers = {}, body } = {}) {
       options.headers["Content-Type"] = "application/json";
       options.headers["Content-Length"] = Buffer.byteLength(data);
     }
-    const req = https.request(options, (res) => {
+    const req = transport.request(options, (res) => {
       let raw = "";
       res.on("data", (chunk) => { raw += chunk; });
       res.on("end", () => {
@@ -524,16 +577,64 @@ function httpsPost(url, headers, body) {
 // Llamadas a cada proveedor
 // ---------------------------------------------------------------------------
 
-async function callOpenRouter(goalInfo, model, apiKey) {
-  const m = model || "openai/gpt-oss-20b:free";
+function getProviderEndpoint(provider) {
+  const envMap = {
+    openrouter: 'OPENROUTER_CHAT_COMPLETIONS_URL',
+    hf: 'HUGGINGFACE_CHAT_COMPLETIONS_URL',
+    zai: 'ZAI_CHAT_COMPLETIONS_URL',
+    clod: 'CLOD_CHAT_COMPLETIONS_URL',
+    openai: 'OPENAI_CHAT_COMPLETIONS_URL',
+    anthropic: 'ANTHROPIC_MESSAGES_URL',
+    deepseek: 'DEEPSEEK_CHAT_COMPLETIONS_URL',
+    gemini: 'GEMINI_CHAT_COMPLETIONS_URL',
+    local: 'FREEJT7_LOCAL_CHAT_COMPLETIONS_URL',
+  };
+  const defaults = {
+    openrouter: 'https://openrouter.ai/api/v1/chat/completions',
+    hf: 'https://router.huggingface.co/together/v1/chat/completions',
+    zai: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+    clod: 'https://api.clod.io/v1/chat/completions',
+    openai: 'https://api.openai.com/v1/chat/completions',
+    anthropic: 'https://api.anthropic.com/v1/messages',
+    deepseek: 'https://api.deepseek.com/v1/chat/completions',
+    gemini: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+    local: process.env.OLLAMA_CHAT_COMPLETIONS_URL || 'http://127.0.0.1:11434/v1/chat/completions',
+  };
+  return process.env[envMap[provider]] || defaults[provider];
+}
+
+function buildProviderRequestHeaders(provider, apiKey) {
+  const key = normalizeApiKey(apiKey);
+  const headers = {};
+  if (provider === 'openrouter') {
+    headers['HTTP-Referer'] = 'vscode-freejt7-extension';
+    headers['X-Title'] = 'Free JT7 Agent';
+  }
+  if (provider === 'anthropic') {
+    headers['anthropic-version'] = '2023-06-01';
+    if (key) headers['x-api-key'] = key;
+  } else if (key) {
+    headers.Authorization = `Bearer ${key}`;
+  }
+  return headers;
+}
+
+function splitAnthropicMessages(messages) {
+  const system = [];
+  const rest = [];
+  for (const entry of messages || []) {
+    if (entry.role === 'system') system.push(entry.content);
+    else if (entry.role === 'assistant' || entry.role === 'user') rest.push(entry);
+  }
+  return { system: system.join('\n\n'), messages: rest };
+}
+
+async function callOpenAICompatible(provider, goalInfo, model, apiKey, defaultModel) {
+  const m = model || defaultModel;
   const limits = getModelLimits(m);
   const resp = await httpsPost(
-    "https://openrouter.ai/api/v1/chat/completions",
-    {
-      "Authorization": `Bearer ${apiKey}`,
-      "HTTP-Referer": "vscode-freejt7-extension",
-      "X-Title": "Free JT7 Agent",
-    },
+    getProviderEndpoint(provider),
+    buildProviderRequestHeaders(provider, apiKey),
     {
       model: m,
       max_tokens: limits.outputTokens,
@@ -542,70 +643,67 @@ async function callOpenRouter(goalInfo, model, apiKey) {
   );
   const responseText = extractChatCompletionText(resp.body);
   if ((resp.statusCode || 0) >= 400 || (hasMeaningfulProviderErrorPayload(resp.body) && !responseText)) {
-    throw normalizeProviderError("openrouter", resp.statusCode, resp.body, goalInfo);
+    throw normalizeProviderError(provider, resp.statusCode, resp.body, goalInfo);
   }
   return responseText || JSON.stringify(resp.body);
+}
+
+async function callAnthropic(goalInfo, model, apiKey) {
+  const m = model || 'claude-3-5-haiku-latest';
+  const limits = getModelLimits(m);
+  const { system, messages } = splitAnthropicMessages(goalInfo.messages);
+  const body = {
+    model: m,
+    max_tokens: limits.outputTokens,
+    messages: messages.length ? messages : [{ role: 'user', content: goalInfo.text || goalInfo._originalGoal || '' }],
+  };
+  if (system) body.system = system;
+  const resp = await httpsPost(
+    getProviderEndpoint('anthropic'),
+    buildProviderRequestHeaders('anthropic', apiKey),
+    body,
+  );
+  const responseText = extractStructuredText(resp.body?.content) || extractChatCompletionText(resp.body);
+  if ((resp.statusCode || 0) >= 400 || (hasMeaningfulProviderErrorPayload(resp.body) && !responseText)) {
+    throw normalizeProviderError('anthropic', resp.statusCode, resp.body, goalInfo);
+  }
+  return responseText || JSON.stringify(resp.body);
+}
+
+async function callOpenRouter(goalInfo, model, apiKey) {
+  return callOpenAICompatible("openrouter", goalInfo, model, apiKey, "openai/gpt-oss-20b:free");
 }
 
 async function callHuggingFace(goalInfo, model, apiKey) {
-  const m = model || "Qwen/Qwen2.5-7B-Instruct-Turbo";
-  const limits = getModelLimits(m);
-  const resp = await httpsPost(
-    "https://router.huggingface.co/together/v1/chat/completions",
-    { "Authorization": `Bearer ${apiKey}` },
-    {
-      model: m,
-      messages: goalInfo.messages,
-      max_tokens: limits.outputTokens,
-    }
-  );
-  const responseText = extractChatCompletionText(resp.body);
-  if ((resp.statusCode || 0) >= 400 || (hasMeaningfulProviderErrorPayload(resp.body) && !responseText)) {
-    throw normalizeProviderError("hf", resp.statusCode, resp.body, goalInfo);
-  }
-  return responseText || JSON.stringify(resp.body);
+  return callOpenAICompatible("hf", goalInfo, model, apiKey, "Qwen/Qwen2.5-7B-Instruct-Turbo");
 }
 
 async function callZai(goalInfo, model, apiKey) {
-  const m = model || "glm-4.5-flash";
-  const limits = getModelLimits(m);
-  const resp = await httpsPost(
-    "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-    { "Authorization": `Bearer ${apiKey}` },
-    {
-      model: m,
-      max_tokens: limits.outputTokens,
-      messages: goalInfo.messages,
-    }
-  );
-  const responseText = extractChatCompletionText(resp.body);
-  if ((resp.statusCode || 0) >= 400 || (hasMeaningfulProviderErrorPayload(resp.body) && !responseText)) {
-    throw normalizeProviderError("zai", resp.statusCode, resp.body, goalInfo);
-  }
-  return responseText || JSON.stringify(resp.body);
+  return callOpenAICompatible("zai", goalInfo, model, apiKey, "glm-4.5-flash");
 }
 
 async function callClod(goalInfo, model, apiKey) {
-  const m = model || "OpenAI/gpt-oss-20B";
-  const limits = getModelLimits(m);
-  const resp = await httpsPost(
-    "https://api.clod.io/v1/chat/completions",
-    { "Authorization": `Bearer ${apiKey}` },
-    {
-      model: m,
-      max_tokens: limits.outputTokens,
-      messages: goalInfo.messages,
-    }
-  );
-  const responseText = extractChatCompletionText(resp.body);
-  if ((resp.statusCode || 0) >= 400 || (hasMeaningfulProviderErrorPayload(resp.body) && !responseText)) {
-    throw normalizeProviderError("clod", resp.statusCode, resp.body, goalInfo);
-  }
-  return responseText || JSON.stringify(resp.body);
+  return callOpenAICompatible("clod", goalInfo, model, apiKey, "OpenAI/gpt-oss-20B");
+}
+
+async function callOpenAI(goalInfo, model, apiKey) {
+  return callOpenAICompatible("openai", goalInfo, model, apiKey, "gpt-4o-mini");
+}
+
+async function callDeepSeek(goalInfo, model, apiKey) {
+  return callOpenAICompatible("deepseek", goalInfo, model, apiKey, "deepseek-chat");
+}
+
+async function callGemini(goalInfo, model, apiKey) {
+  return callOpenAICompatible("gemini", goalInfo, model, apiKey, "gemini-2.5-flash");
+}
+
+async function callLocal(goalInfo, model, apiKey) {
+  return callOpenAICompatible("local", goalInfo, model, apiKey, "llama3.1:8b");
 }
 
 // ---------------------------------------------------------------------------
-// Punto de entrada principal — devuelve el mismo shape que runCopilotRouter
+// Punto de entrada principal — devuelve el shape de resultado del runtime nativo
 // ---------------------------------------------------------------------------
 
 async function callProviderWithRetry(provider, goalInfo, model, apiKey) {
@@ -614,6 +712,11 @@ async function callProviderWithRetry(provider, goalInfo, model, apiKey) {
   else if (provider === "hf") callFn = callHuggingFace;
   else if (provider === "zai") callFn = callZai;
   else if (provider === "clod") callFn = callClod;
+  else if (provider === "openai") callFn = callOpenAI;
+  else if (provider === "anthropic") callFn = callAnthropic;
+  else if (provider === "deepseek") callFn = callDeepSeek;
+  else if (provider === "gemini") callFn = callGemini;
+  else if (provider === "local") callFn = callLocal;
   else throw createTaggedError(`Free JT7: Proveedor desconocido: \"${provider}\"`, { isRetryable: false });
 
   try {
@@ -679,7 +782,7 @@ async function fetchProviderModels(provider, secretStorage, options = {}) {
 async function callProvider(goal, config, secretStorage, options = {}) {
   const { provider, model, authProfile } = config;
   const apiKey = normalizeApiKey(await getApiKey(provider, secretStorage, { ...options, authProfile: authProfile || options.authProfile }));
-  if (!apiKey) {
+  if (!apiKey && provider !== "local") {
     throw createTaggedError(
       `Free JT7: No hay API Key para \"${provider}\". Usa el comando \"Free JT7: Configurar API Key de Proveedor\".`,
       { isConfigurationError: true, isUserActionRequired: true, isRetryable: false },
@@ -760,4 +863,6 @@ module.exports = {
   getFreeModelDefault,
   getFreeModelDefaults,
   normalizeProviderError,
+  buildProviderRequestHeaders,
+  getProviderEndpoint,
 };

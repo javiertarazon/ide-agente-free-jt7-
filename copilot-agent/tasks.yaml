@@ -2314,3 +2314,162 @@ tareas:
     skills_usados: ["free-jt7-global-runtime-audit", "production-code-audit", "seo-audit"]
     resultado: >
       Run finalizado con 2 steps
+  - id: "20260515-autonomous-agent-audit-fixes"
+    fecha: "2026-05-15"
+    titulo: "Auditoria operativa agente autonomo native-IDE"
+    estado: "completado"
+    descripcion: >
+      Analisis y correccion minima de fallos que bloquean la operacion de Free JT7 como agente autonomo nativo con providers API, skills, MCP, subagentes y apertura/operacion de programas e IDE.
+    validacion: "Pruebas unitarias/smoke sobre scripts modificados y auditoria base."
+
+  - id: "20260515-offline-smoke-scripts-unit-tests"
+    fecha: "2026-05-15"
+    titulo: "Pruebas unitarias scripts smokes offline autonomia"
+    estado: "completado"
+    descripcion: >
+      Continuacion del endurecimiento de autonomia: convertir scripts modificados en modulos importables y agregar pruebas unitarias para evitar regresiones del runner offline, CLŌD smoke, installed extension smoke y router functional blocked-gate.
+    validacion: "node tests/offline_smoke_scripts_unit.js; npm run test:offline; npm run build:bundle; git diff --check"
+
+  - id: "20260515-provider-compat-openai-anthropic-deepseek-gemini-local"
+    fecha: "2026-05-15"
+    titulo: "Compatibilidad providers OpenAI Anthropic DeepSeek Gemini Local"
+    estado: "completado"
+    descripcion: >
+      Agregar compatibilidad verificable para proveedores API adicionales y modelos locales, manteniendo cambios minimos y pruebas offline.
+    validacion: "tests provider registry/model catalog/direct calls mock + build/test offline"
+
+  - id: "20260515-native-autonomy-doctor-tools-packaging"
+    fecha: "2026-05-15"
+    titulo: "Doctor autonomia nativa tools MCP skills packaging"
+    estado: "completado"
+    descripcion: >
+      Crear una verificacion offline centralizada para confirmar que Free JT7 expone autoaprendizaje, agente MT5, MCP, skills, subagentes, UI nativa, modos autonomo/asistido y empaquetado/instalacion own-IDE.
+    validacion: "doctor smoke offline + smokes existentes + build"
+
+  - id: "20260515-remove-github-copilot-native-dependency"
+    fecha: "2026-05-15"
+    titulo: "Eliminar dependencia GitHub Copilot de ruta nativa"
+    estado: "completado"
+    descripcion: >
+      Retirar dependencias de GitHub Copilot/Copilot SDK de scripts, modelos, comandos y ruta nativa de Free JT7, dejando capacidades propias verificables.
+    validacion: "smoke anti-copilot + test offline + build"
+  - id: "20260515-freejt7-codex-trae-autonomy-comparison"
+    fecha: "2026-05-15"
+    titulo: "Comparativa autonomia Free JT7 vs Codex vs Trae"
+    estado: "completado"
+    descripcion: >
+      Comparar workflow, desglose, subagentes, memoria persistente, tools/skills, MCP, privilegios y proveedores para medir que tan cerca esta Free JT7 de un agente autonomo completo.
+    validacion: "smoke de documento comparativo + tests offline ligeros"
+  - id: "20260515-autonomy-gap-closure-gate"
+    fecha: "2026-05-15"
+    titulo: "Gate cierre brechas autonomia Free JT7"
+    estado: "completado"
+    descripcion: >
+      Convertir la brecha cuantificada Free JT7 vs Codex/Trae en un gate verificable que indique si sandboxing, paralelismo, memoria semantica y UX de revision estan realmente cerrados.
+    validacion: "unit smoke del assessor + doctor nativo + build/test offline"
+  - id: "20260516-close-autonomy-technical-gaps"
+    fecha: "2026-05-16"
+    titulo: "Cierre tecnico brechas autonomia Free JT7"
+    estado: "completado"
+    descripcion: >
+      Implementar evidencia real para cerrar sandboxing por tarea, subagentes paralelos, memoria semantica y review/rollback en el gate de autonomia.
+    validacion: "smokes nuevos + doctor nativo + build/test offline"
+
+- id: 20260517-advanced-product-hardening
+  title: Hardening avanzado producto autonomia Free JT7
+  status: completed
+  created_at: '2026-05-17T00:00:00Z'
+  completed_at: '2026-05-17T11:45:00Z'
+  owner: free-jt7
+  deliverable: Codigo, pruebas y trazabilidad para aislamiento real de procesos, UI visual de planes/diffs, pruebas live opt-in y validacion final own-IDE.
+  constraints:
+    - Mantener compatibilidad offline por defecto.
+    - No reintroducir dependencia GitHub Copilot.
+    - No exigir credenciales API reales para smokes offline.
+  validation:
+    - node tests/task_sandbox_smoke.js
+    - node tests/control_panel_ui_smoke.js
+    - node tests/live_api_contract_smoke.js
+    - node tests/final_install_validation_smoke.js
+    - npm run doctor:native
+    - npm run build:bundle
+    - npm run test:offline
+  blocker: CONNECT tunnel failed, response 403 al intentar git push hacia GitHub desde el contenedor.
+  microtasks:
+    - id: audit-current-hardening
+      status: completed
+      description: Auditar estado actual y definir brechas de producto.
+    - id: process-isolation
+      status: completed
+      description: Endurecer sandbox con ejecucion en proceso aislado.
+    - id: visual-plan-diff-ui
+      status: completed
+      description: Mostrar plan/diff/review/rollback/evidencia en el panel.
+    - id: live-api-final-install-gates
+      status: completed
+      description: Agregar gates opt-in de APIs reales e instalacion final.
+    - id: verification
+      status: completed
+      description: Ejecutar smokes y suite offline.
+
+- id: 20260518-release-v4-2-12-remote-publish
+  title: Publicacion remota v4.2.12 autonomia producto
+  status: blocked
+  created_at: '2026-05-18T00:00:00Z'
+  blocked_at: '2026-05-18T13:08:00Z'
+  owner: free-jt7
+  branch: release/v4.2.12-native-autonomy-product
+  target_remote: https://github.com/javiertarazon/ide-agente-free-jt7-.git
+  deliverable: Rama remota nueva con version 4.2.12, documentacion, trazabilidad y memoria de tareas actualizadas.
+  constraints:
+    - No hacer force-push.
+    - No inventar credenciales si GitHub rechaza el push.
+    - Mantener pruebas live como opt-in.
+  validation:
+    - node tests/live_api_contract_smoke.js
+    - node tests/final_install_validation_smoke.js
+    - npm run doctor:native
+    - npm run build:bundle
+    - npm run test:offline
+    - git ls-remote --heads origin release/v4.2.12-native-autonomy-product
+  blocker: CONNECT tunnel failed, response 403 al intentar git push hacia GitHub desde el contenedor.
+  microtasks:
+    - id: branch-version-docs
+      status: completed
+      description: Crear rama, subir version y documentar estado.
+    - id: verification
+      status: completed
+      description: Ejecutar pruebas unitarias, doctor, build y suite offline.
+    - id: remote-push
+      status: blocked
+      description: Configurar remoto si falta y subir rama nueva.
+    - id: close-trace
+      status: completed
+      description: Cerrar trazabilidad y registrar resultado.
+
+- id: 20260518-github-token-push-retry
+  title: Reintento de push remoto con token GitHub
+  status: blocked
+  created_at: '2026-05-18T00:00:00Z'
+  blocked_at: '2026-05-18T00:00:00Z'
+  owner: free-jt7
+  branch: release/v4.2.12-native-autonomy-product
+  target_remote: https://github.com/javiertarazon/ide-agente-free-jt7-.git
+  deliverable: Subir commits previos a GitHub usando credencial temporal proporcionada por el usuario.
+  constraints:
+    - No persistir ni documentar el token.
+    - No hacer force-push.
+    - Registrar bloqueo si falla la red antes de autenticacion.
+  validation:
+    - git push -u origin release/v4.2.12-native-autonomy-product
+  blocker: CONNECT tunnel failed, response 403 antes de autenticacion GitHub.
+  microtasks:
+    - id: remote-and-branch
+      status: completed
+      description: Origin configurado y rama local creada.
+    - id: secure-token-push
+      status: blocked
+      description: Push con GIT_ASKPASS temporal bloqueado por proxy del entorno.
+    - id: trace-close
+      status: completed
+      description: Resultado documentado sin persistir token.

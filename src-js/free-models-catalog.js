@@ -14,7 +14,7 @@ const DEFAULT_MODELS = getFreeModelDefaults();
 
 /**
  * Devuelve la lista de modelos gratuitos para un proveedor.
- * @param {string} provider - "openrouter" | "hf" | "zai" | "copilot"
+ * @param {string} provider - "openrouter" | "hf" | "zai" | "clod" | "local"
  * @returns {Array<{label:string, value:string}>}
  */
 function getModelsForProvider(provider) {

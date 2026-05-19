@@ -10,21 +10,55 @@ const PROVIDER_CONFIGS = Object.freeze({
       'HTTP-Referer': 'vscode-freejt7-extension',
       'X-Title': 'Free JT7 Agent',
     }),
+    requiresApiKey: true,
   }),
   hf: Object.freeze({
     chatCompletionsUrl: 'https://router.huggingface.co/together/v1/chat/completions',
     apiKeyEnv: 'HUGGINGFACE_API_KEY',
     defaultHeaders: Object.freeze({}),
+    requiresApiKey: true,
   }),
   zai: Object.freeze({
     chatCompletionsUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
     apiKeyEnv: 'ZAI_API_KEY',
     defaultHeaders: Object.freeze({}),
+    requiresApiKey: true,
   }),
   clod: Object.freeze({
     chatCompletionsUrl: 'https://api.clod.io/v1/chat/completions',
     apiKeyEnv: 'CLOD_API_KEY',
     defaultHeaders: Object.freeze({}),
+    requiresApiKey: true,
+  }),
+  openai: Object.freeze({
+    chatCompletionsUrl: 'https://api.openai.com/v1/chat/completions',
+    apiKeyEnv: 'OPENAI_API_KEY',
+    defaultHeaders: Object.freeze({}),
+    requiresApiKey: true,
+  }),
+  anthropic: Object.freeze({
+    chatCompletionsUrl: 'https://api.anthropic.com/v1/messages',
+    apiKeyEnv: 'ANTHROPIC_API_KEY',
+    defaultHeaders: Object.freeze({ 'anthropic-version': '2023-06-01' }),
+    requiresApiKey: true,
+  }),
+  deepseek: Object.freeze({
+    chatCompletionsUrl: 'https://api.deepseek.com/v1/chat/completions',
+    apiKeyEnv: 'DEEPSEEK_API_KEY',
+    defaultHeaders: Object.freeze({}),
+    requiresApiKey: true,
+  }),
+  gemini: Object.freeze({
+    chatCompletionsUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+    apiKeyEnv: 'GEMINI_API_KEY',
+    defaultHeaders: Object.freeze({}),
+    requiresApiKey: true,
+  }),
+  local: Object.freeze({
+    chatCompletionsUrl: process.env.FREEJT7_LOCAL_CHAT_COMPLETIONS_URL || process.env.OLLAMA_CHAT_COMPLETIONS_URL || 'http://127.0.0.1:11434/v1/chat/completions',
+    apiKeyEnv: 'FREEJT7_LOCAL_API_KEY',
+    defaultHeaders: Object.freeze({}),
+    requiresApiKey: false,
   }),
 });
 
@@ -39,6 +73,7 @@ function getProviderConfig(providerId) {
     chatCompletionsUrl: config.chatCompletionsUrl,
     apiKeyEnv: config.apiKeyEnv,
     defaultHeaders: { ...config.defaultHeaders },
+    requiresApiKey: config.requiresApiKey !== false,
   };
 }
 
@@ -72,12 +107,18 @@ function buildChatCompletionPayload({ providerId, modelId, messages, prompt, str
 
 function buildProviderHeaders(providerId, apiKey, extraHeaders = {}) {
   const config = getProviderConfig(providerId);
-  return {
+  const headers = {
     ...config.defaultHeaders,
     ...extraHeaders,
-    Authorization: `Bearer ${String(apiKey || '').trim()}`,
     'Content-Type': 'application/json',
   };
+  const key = String(apiKey || '').trim();
+  if (config.provider.id === 'anthropic') {
+    if (key) headers['x-api-key'] = key;
+  } else if (key) {
+    headers.Authorization = `Bearer ${key}`;
+  }
+  return headers;
 }
 
 module.exports = {

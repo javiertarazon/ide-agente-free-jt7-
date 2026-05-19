@@ -17,3 +17,21 @@
 | 008 | own-ide / agent runtime | N/A | Fase 3 formal: reconstruccion de `agentState`, `yield/resume` y continuidad post-restart | N/A | N/A | N/A | Veredicto: Fase 3 cerrada. `session-engine` ya reconstruye continuidad desde tareas persistidas, actualiza el estado al recuperar tareas interrumpidas y mantiene reanudacion verificable. Proximo paso: Fase 5/Fase 6 formales. |
 | 008 | own-ide / copilot legacy | N/A | Fase 6 cierre formal: aislamiento de Copilot como ruta secundaria legacy | N/A | N/A | N/A | Veredicto: Fase 6 cerrada. `copilot_router.runtime` ya usa seleccion/config separada del provider principal, deja metadata explícita de compatibilidad secundaria y conserva override explícito compatible. Proximo paso: cerrar Fase 5 para terminar de subordinar providers y OpenClaw al runtime propio. |
 | 008 | own-ide / agent runtime | N/A | Fase 4 cierre formal: dispatch provider-independent de skills, MCP y tools nativos | N/A | N/A | N/A | Veredicto: Fase 4 cerrada. `freejt7-agent-runtime` ahora publica `capabilityPlan.dispatch` con `owner`, `dispatchTarget` y `trace`, y `local-agent-runtime` preserva esa evidencia en resumen tecnico/verificacion. Proximo paso: cerrar Fase 5 subordinando providers/OpenClaw sin perder esta trazabilidad. |
+
+## Hardening avanzado producto autonomia (2026-05-17)
+- Run: `20260517-advanced-product-hardening`.
+- Metricas: doctor nativo `67 checks / 0 failed / 0 warnings`; suite offline completa OK; build bundle OK.
+- Cierre: se agrega aislamiento de procesos con entorno saneado y timeout, UI visual de plan/diff/review/rollback, gate live opt-in y validador de instalacion final own-IDE.
+- Siguiente paso: ejecutar `npm run doctor:live-api` con credenciales reales por proveedor en entorno seguro y `npm run doctor:final-install` contra una VSIX instalada en own-IDE real.
+
+## Publicacion remota v4.2.12 (2026-05-18)
+- Run: `20260518-release-v4-2-12-remote-publish`.
+- Metricas: version `4.2.12`, doctor nativo OK, build OK, suite offline OK.
+- Resultado: rama local `release/v4.2.12-native-autonomy-product` preparada; push remoto bloqueado por proxy del contenedor (`CONNECT tunnel failed, response 403`).
+- Siguiente paso: ejecutar `git push -u origin release/v4.2.12-native-autonomy-product` desde un entorno con acceso a GitHub.
+
+## Reintento push remoto con credencial temporal (2026-05-18)
+- Run: `20260518-github-token-push-retry`.
+- Resultado: rama local `release/v4.2.12-native-autonomy-product` creada desde el commit actual, remoto `origin` configurado.
+- Bloqueo: `git push -u origin release/v4.2.12-native-autonomy-product` fallo por proxy (`CONNECT tunnel failed, response 403`) antes de autenticar contra GitHub.
+- Siguiente paso: ejecutar el mismo push desde un host/red con salida HTTPS a GitHub habilitada; no se persistio la credencial en Git config ni en archivos del repo.

@@ -43,7 +43,7 @@ GITHUB_API_BASE = "https://api.github.com"
 
 
 def _github_token() -> str | None:
-    for var in ("GH_TOKEN", "GITHUB_TOKEN", "COPILOT_GITHUB_TOKEN"):
+    for var in ("GH_TOKEN", "GITHUB_TOKEN"):
         if os.environ.get(var):
             return os.environ[var]
     try:

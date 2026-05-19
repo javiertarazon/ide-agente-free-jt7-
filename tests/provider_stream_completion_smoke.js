@@ -63,6 +63,20 @@ async function main() {
   assert.equal(routed.provider, 'hf');
   assert.equal(routed.summary, 'Hola');
 
+  const localCaptured = {};
+  const local = await streamCompletion({
+    providerId: 'local',
+    modelId: 'llama3.1:8b',
+    messages: [{ role: 'user', content: 'di hola local' }],
+    getApiKey: async () => '',
+    requestImpl: createMockRequest(localCaptured),
+  });
+  assert.equal(local.provider, 'local');
+  assert.equal(local.summary, 'Hola');
+  assert.equal(localCaptured.options.hostname, '127.0.0.1');
+  assert.equal(localCaptured.options.port, '11434');
+  assert.equal(localCaptured.options.headers.Authorization, undefined);
+
   console.log('provider_stream_completion_smoke: OK');
 }
 

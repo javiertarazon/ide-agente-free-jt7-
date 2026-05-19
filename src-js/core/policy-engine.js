@@ -144,7 +144,7 @@ class PolicyEngine {
       return 'medium';
     }
 
-    if (executionMode === 'agent' && provider && provider !== 'copilot') {
+    if (executionMode === 'agent' && provider) {
       return 'medium';
     }
 

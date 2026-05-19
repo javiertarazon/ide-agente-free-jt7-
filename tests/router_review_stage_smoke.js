@@ -7,7 +7,7 @@ const {
   shouldAttemptAutoFix,
   createSessionHooks,
   createNativeToolPolicy,
-} = require("../src-js/core/copilot_router.runtime.js");
+} = require("../src-js/core/native-router-core.js");
 const {
   allocatePromptBudget,
   compactPrompt,
@@ -264,7 +264,7 @@ async function main() {
   testRemoteBridgeDetectsStaleHostIdentity();
   testNativeToolPolicyBlocksDestructiveShell();
   await testSessionHooksPersistToolTrace();
-  console.log("router_review_stage_smoke: ok");
+  console.log("native_router_review_stage_smoke: ok");
 }
 
 main().catch((error) => {

@@ -144,7 +144,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--workspace-root", required=True)
     generate.add_argument("--prompt", required=True)
     generate.add_argument("--output-name", required=True)
-    generate.add_argument("--provider", default="copilot")
+    generate.add_argument("--provider", default="openrouter")
     generate.add_argument("--model", default="")
     generate.add_argument("--source-file", default="")
     generate.add_argument("--interactive-canva-auth", action="store_true")

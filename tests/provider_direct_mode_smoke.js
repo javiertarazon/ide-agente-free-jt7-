@@ -57,16 +57,12 @@ async function main() {
   assert.equal(directCalls[0].config.provider, 'clod');
   assert.equal(directCalls[0].config.model, 'OpenAI/gpt-oss-20B');
 
-  const copilot = await router.execute({
-    goal: 'aunque pidan direct, copilot debe ir por agente',
-    provider: 'copilot',
-    executionMode: 'direct',
-  }, {
-    workspacePath: process.cwd(),
-  });
-  assert.equal(copilot.executionMode, 'agent');
-  assert.equal(agentCalls, 1, 'copilot debe conservar ruta agente');
-  assert.equal(directCalls.length, 1, 'copilot no debe llamar proveedor directo');
+  assert.throws(
+    () => require('../src-js/core/provider-registry.js').requireProvider('copilot'),
+    /proveedor no registrado/,
+    'El proveedor legacy de chat no debe estar registrado como proveedor nativo',
+  );
+
 
   console.log('provider_direct_mode_smoke: OK');
 }
