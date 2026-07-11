@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NODE_BIN="${NODE_BIN:-node}"
+if [[ -z "${NODE_BIN:-}" ]]; then
+  NODE_BIN=$(command -v node || command -v nodejs || echo "")
+  if [[ -z "$NODE_BIN" ]]; then
+    # Intentar rutas comunes en sistemas tipo Debian/Zorin
+    if [[ -x "/usr/bin/node" ]]; then NODE_BIN="/usr/bin/node"
+    elif [[ -x "/usr/local/bin/node" ]]; then NODE_BIN="/usr/local/bin/node"
+    fi
+  fi
+fi
+
+if [[ -z "$NODE_BIN" || ! -x "$NODE_BIN" ]]; then
+  echo "[freejt7-desktop] ERROR: no se pudo encontrar un ejecutable de node válido." >&2
+  exit 1
+fi
 
 if [[ -n "${FREEJT7_APP_ROOT:-}" ]]; then
   APP_ROOT="$FREEJT7_APP_ROOT"
@@ -16,11 +29,6 @@ else
     echo "[freejt7-desktop] ERROR: no se pudo resolver APP_ROOT." >&2
     exit 1
   fi
-fi
-
-if ! command -v "$NODE_BIN" >/dev/null 2>&1; then
-  echo "[freejt7-desktop] ERROR: no se encontro node en PATH." >&2
-  exit 1
 fi
 
 WORKSPACE="${FREEJT7_WORKSPACE:-$PWD}"

@@ -149,12 +149,24 @@
         "id": "freejt7.chat",
         "name": "free-jt7",
         "fullName": "Free JT7",
-        "description": "Planifica y ejecuta tareas de Free JT7 desde GitHub Copilot Chat en cualquier carpeta abierta.",
+        "description": "Planifica y ejecuta tareas de Free JT7 desde GitHub Copilot Chat en cualquier carpeta abierta. Usa comandos para seleccionar proveedor y modelo gratuito. ",
         "isSticky": true,
         "commands": [
           {
             "name": "route",
             "description": "Ejecuta el router de Free JT7 sobre tu solicitud actual"
+          },
+          {
+            "name": "selectApiProvider",
+            "description": "Selecciona el proveedor de API para Free JT7"
+          },
+          {
+            "name": "selectFreeModel",
+            "description": "Selecciona un modelo gratuito para el proveedor activo"
+          },
+          {
+            "name": "setApiKey",
+            "description": "Configura la API key del proveedor seleccionado"
           },
           {
             "name": "doctor",
@@ -440,7 +452,7 @@
   },
   "devDependencies": {
     "@vscode/vsce": "^3.7.1",
-    "esbuild": "^0.25.10"
+    "esbuild": "^0.25.12"
   },
   "repository": {
     "type": "git",

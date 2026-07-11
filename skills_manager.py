@@ -68,8 +68,8 @@ for stream_name in ("stdout", "stderr"):
 # â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 ROOT          = Path(__file__).resolve().parent
-# por defecto el catÃ¡logo residente se ubica en .github/skills
-SKILLS_DIR    = ROOT / ".github" / "skills"
+# por defecto el catálogo residente se ubica en el directorio /skills del proyecto
+SKILLS_DIR    = ROOT / "skills"
 INDEX_FILE    = SKILLS_DIR / ".skills_index.json"
 ACTIVE_FILE   = SKILLS_DIR / ".active_skills.json"
 SOURCES_FILE  = SKILLS_DIR / ".sources.json"

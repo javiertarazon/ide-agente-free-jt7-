@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 set -e
-echo "[freejt7-desktop] Instalado. Ejecuta: freejt7-desktop --no-launch"
+chmod +x /opt/freejt7-desktop/scripts/freejt7-desktop-launcher.sh
+echo "[freejt7-desktop] Instalado exitosamente. Ejecuta: freejt7-desktop"

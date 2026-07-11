@@ -42,3 +42,4 @@
 - Mention changed files with short rationale.
 - Report what was verified and what could not be verified.
 - Indicate whether the mandatory intake, skill resolution, delegation decision, and traceability were completed.
+debes reslizar pruebas de los modulos modificados para garante

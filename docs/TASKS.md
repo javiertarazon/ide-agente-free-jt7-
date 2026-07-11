@@ -268,15 +268,15 @@
   - [x] Cerrar trazabilidad y memoria
 
 ## Auditoria integral interfaz/runtime/autonomia Free JT7 (2026-04-27)
-- [ ] Objetivo principal: auditar de extremo a extremo Free JT7 para confirmar rutas reales de interfaz, runtime, proveedores externos, own-ide y autonomia, y preparar refactor guiado por evidencia si la arquitectura actual sigue divergente
+- [x] Objetivo principal: auditar de extremo a extremo Free JT7 para confirmar rutas reales de interfaz, runtime, proveedores externos, own-ide y autonomia, y preparar refactor guiado por evidencia si la arquitectura actual sigue divergente
   - [x] Intake obligatorio resuelto con el usuario: entregable = auditoria + refactor integral de interfaz/runtime; restricciones = se permite copiar/adaptar arquitectura de OpenClaw/OpenCode/Claurst; validacion = smokes del repo + prueba real en own-ide/VSCodium + comparativa externa
   - [x] Resolver skills aplicables: `using-superpowers`, `agent-orchestration`, `free-jt7-global-runtime-audit`, `systematic-debugging`, `verification-before-completion`
-  - [ ] Ejecutar auditoria base verificable del runtime actual (policy/doctor/host/ide/task-run + smokes criticos de panel/providers/runtime/installed extension)
-  - [ ] Contrastar rutas y ownership reales en `control-panel`, `provider-router`, `session-engine`, `extension.runtime` y bootstrap `own-ide`
-  - [ ] Comparar gaps contra OpenClaw, OpenCode y Claurst en interfaz, autonomia, providers/API, control-plane y sesiones
-  - [ ] Consolidar hallazgos en backlog priorizado: bugs, deuda arquitectonica, regresiones, rutas muertas y riesgos
-  - [ ] Definir plan de ejecucion por frentes con criterios de aceptacion y evidencias exigidas
-  - [ ] Asignar subagentes por frente: auditoria repo principal, comparativa OpenClaw/OpenCode, comparativa Claurst, refactor UI/runtime, verificacion own-ide
+  - [x] Ejecutar auditoria base verificable del runtime actual (policy/doctor/host/ide/task-run + smokes criticos de panel/providers/runtime/installed extension)
+  - [x] Contrastar rutas y ownership reales en `control-panel`, `provider-router`, `session-engine`, `extension.runtime` y bootstrap `own-ide`
+  - [x] Comparar gaps contra OpenClaw, OpenCode y Claurst en interfaz, autonomia, providers/API, control-plane y sesiones
+  - [x] Consolidar hallazgos en backlog priorizado: bugs, deuda arquitectonica, regresiones, rutas muertas y riesgos
+  - [x] Definir plan de ejecucion por frentes con criterios de aceptacion y evidencias exigidas
+  - [x] Asignar subagentes por frente: auditoria repo principal, comparativa OpenClaw/OpenCode, comparativa Claurst, refactor UI/runtime, verificacion own-ide
 
 ## Ejecucion inicial Plan 20 con multi-subagentes (2026-04-27)
 - [x] Objetivo principal: arrancar la ejecucion real del plan 20 con delegacion por frentes, acople tecnico minimo compatible y cierre operativo en own-ide
